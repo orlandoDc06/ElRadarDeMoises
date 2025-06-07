@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "842542493069",
+    "project_id": "elradardemoises",
+    "storage_bucket": "elradardemoises.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:842542493069:android:4b6f9bdd943844fc1121c4",
+        "android_client_info": {
+          "package_name": "com.example.elradardemoises"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "842542493069-0aho5gjmp9946s5d76fmth8ruis8l9ju.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.elradardemoises",
+            "certificate_hash": "e6da4047fbec6753f044e4d888074fa0b567a374"
+          }
+        },
+        {
+          "client_id": "842542493069-limvbf9v9o0f0s65popi8tcr3dj4er56.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByc5KfZnPyqB2vsUGU_ULFpqnmhu3WAi8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "842542493069-limvbf9v9o0f0s65popi8tcr3dj4er56.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
