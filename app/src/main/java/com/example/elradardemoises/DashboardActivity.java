@@ -21,6 +21,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.elradardemoises.models.Dht11;
+import com.example.elradardemoises.models.Bmp180;
 import com.example.elradardemoises.models.Usuario;
 import com.example.elradardemoises.utils.UserManager;
 import com.google.android.material.button.MaterialButton;
@@ -43,15 +44,21 @@ public class DashboardActivity extends AppCompatActivity {
     private ImageView ivProfilePicture;
     private MaterialButton btnLogout;
 
+    // DHT11 Views
     private TextView tvTemperatura, tvHumedad, tvTimestamp;
+
+    // BMP180 Views
+    private TextView tvAltitud, tvPresion, tvPresionNivelMar, tvTimestampBmp;
+
     private MaterialButton btnRefreshWeather;
 
     private DatabaseReference databaseReference;
     private Usuario usuarioActual;
     private Dht11 datosMeteorologicos;
-
+    private Bmp180 datosBarometricos;
 
     private ValueEventListener weatherListener;
+    private ValueEventListener bmpListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +77,7 @@ public class DashboardActivity extends AppCompatActivity {
         setupClickListeners();
         cargarDatosUsuario();
         cargarDatosMeteorologicos();
+        cargarDatosBarometricos();
     }
 
     private void initializeViews() {
@@ -78,9 +86,17 @@ public class DashboardActivity extends AppCompatActivity {
         ivProfilePicture = findViewById(R.id.ivProfilePicture);
         btnLogout = findViewById(R.id.btnLogout);
 
+        // DHT11 Views
         tvTemperatura = findViewById(R.id.tvTemperatura);
         tvHumedad = findViewById(R.id.tvHumedad);
         tvTimestamp = findViewById(R.id.tvTimestamp);
+
+        // BMP180 Views
+        tvAltitud = findViewById(R.id.tvAltitud);
+        tvPresion = findViewById(R.id.tvPresion);
+        tvPresionNivelMar = findViewById(R.id.tvPresionNivelMar);
+        tvTimestampBmp = findViewById(R.id.tvTimestampBmp);
+
         btnRefreshWeather = findViewById(R.id.btnRefreshWeather);
     }
 
@@ -94,6 +110,7 @@ public class DashboardActivity extends AppCompatActivity {
         btnRefreshWeather.setOnClickListener(v -> {
             btnRefreshWeather.animate().rotation(360).setDuration(500).start();
             cargarDatosMeteorologicos();
+            cargarDatosBarometricos();
             Toast.makeText(this, "Actualizando datos...", Toast.LENGTH_SHORT).show();
         });
     }
@@ -118,44 +135,79 @@ public class DashboardActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     Dht11 ultimosDatos = null;
 
-
                     if (snapshot.hasChild("actual")) {
                         ultimosDatos = snapshot.child("actual").getValue(Dht11.class);
-                    }
-
-                    else {
+                    } else {
                         for (DataSnapshot child : snapshot.getChildren()) {
                             ultimosDatos = child.getValue(Dht11.class);
-
                         }
                     }
 
                     if (ultimosDatos != null) {
                         datosMeteorologicos = ultimosDatos;
                         mostrarDatosMeteorologicos(ultimosDatos);
-
                     }
                 } else {
-                    Log.d(TAG, "No hay datos meteorológicos disponibles");
-                    mostrarDatosVacios();
+                    Log.d(TAG, "No hay datos meteorológicos DHT11 disponibles");
+                    mostrarDatosVaciosDht11();
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e(TAG, "Error al cargar datos meteorológicos: " + error.getMessage());
+                Log.e(TAG, "Error al cargar datos DHT11: " + error.getMessage());
                 Toast.makeText(DashboardActivity.this,
-                        "Error al cargar datos meteorológicos", Toast.LENGTH_SHORT).show();
-                mostrarDatosVacios();
+                        "Error al cargar datos DHT11", Toast.LENGTH_SHORT).show();
+                mostrarDatosVaciosDht11();
             }
         };
 
         databaseReference.child("dht11").addValueEventListener(weatherListener);
     }
 
+    private void cargarDatosBarometricos() {
+        if (bmpListener != null) {
+            databaseReference.child("bmp180").removeEventListener(bmpListener);
+        }
+
+        bmpListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Bmp180 ultimosDatos = null;
+
+                    if (snapshot.hasChild("actual")) {
+                        ultimosDatos = snapshot.child("actual").getValue(Bmp180.class);
+                    } else {
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            ultimosDatos = child.getValue(Bmp180.class);
+                        }
+                    }
+
+                    if (ultimosDatos != null) {
+                        datosBarometricos = ultimosDatos;
+                        mostrarDatosBarometricos(ultimosDatos);
+                    }
+                } else {
+                    Log.d(TAG, "No hay datos barométricos BMP180 disponibles");
+                    mostrarDatosVaciosBmp180();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error al cargar datos BMP180: " + error.getMessage());
+                Toast.makeText(DashboardActivity.this,
+                        "Error al cargar datos BMP180", Toast.LENGTH_SHORT).show();
+                mostrarDatosVaciosBmp180();
+            }
+        };
+
+        databaseReference.child("bmp180").addValueEventListener(bmpListener);
+    }
+
     private void mostrarDatosMeteorologicos(Dht11 datos) {
         if (datos != null) {
-
             double temperatura = datos.getTemperatura();
             if (temperatura != 0) {
                 tvTemperatura.setText(String.format("%.1f°C", temperatura));
@@ -180,27 +232,53 @@ public class DashboardActivity extends AppCompatActivity {
         }
     }
 
-    private void mostrarDatosVacios() {
+    private void mostrarDatosBarometricos(Bmp180 datos) {
+        if (datos != null) {
+            double altitud = datos.getAltitud();
+            if (altitud != 0) {
+                tvAltitud.setText(String.format("%.1f m", altitud));
+            } else {
+                tvAltitud.setText("-- m");
+            }
+
+            double presion = datos.getPresion();
+            if (presion != 0) {
+                tvPresion.setText(String.format("%.1f hPa", presion));
+            } else {
+                tvPresion.setText("-- hPa");
+            }
+
+            double presionNivelMar = datos.getPresion_nivel_mar();
+            if (presionNivelMar != 0) {
+                tvPresionNivelMar.setText(String.format("%.1f hPa", presionNivelMar));
+            } else {
+                tvPresionNivelMar.setText("-- hPa");
+            }
+
+            String timestamp = datos.getTimestamp();
+            if (timestamp != null && !timestamp.isEmpty()) {
+                tvTimestampBmp.setText("Última actualización: " + datos.getTimestampFormateado());
+            } else {
+                tvTimestampBmp.setText("Última actualización: " +
+                        new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date()));
+            }
+        }
+    }
+
+    private void mostrarDatosVaciosDht11() {
         tvTemperatura.setText("-- °C");
         tvHumedad.setText("-- %");
         tvTimestamp.setText("Sin datos disponibles");
     }
 
-    private String formatearTimestamp(String timestamp) {
-        try {
-            if (timestamp.matches("\\d+")) {
-                long time = Long.parseLong(timestamp);
-                Date date = new Date(time);
-                return new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(date);
-            }
-            return timestamp;
-        } catch (Exception e) {
-            Log.e(TAG, "Error: " + e.getMessage());
-            return timestamp;
-        }
+    private void mostrarDatosVaciosBmp180() {
+        tvAltitud.setText("-- m");
+        tvPresion.setText("-- hPa");
+        tvPresionNivelMar.setText("-- hPa");
+        tvTimestampBmp.setText("Sin datos disponibles");
     }
 
-
+    // El resto del código permanece igual...
     private void cargarDatosUsuario() {
         Intent intent = getIntent();
         String userEmail = intent.getStringExtra("user_email");
@@ -376,6 +454,9 @@ public class DashboardActivity extends AppCompatActivity {
         super.onDestroy();
         if (weatherListener != null && databaseReference != null) {
             databaseReference.child("dht11").removeEventListener(weatherListener);
+        }
+        if (bmpListener != null && databaseReference != null) {
+            databaseReference.child("bmp180").removeEventListener(bmpListener);
         }
     }
 }
