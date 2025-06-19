@@ -5,14 +5,12 @@ import java.io.Serializable;
 public class Usuario implements Serializable {
     private String correo;
     private String nombre;
-    private String pp; // URL de la foto de perfil
-    private String key; // UID de Firebase
+    private String pp;
+    private String key;
 
-    // Constructor vacío requerido por Firebase
     public Usuario() {
     }
 
-    // Constructor completo
     public Usuario(String correo, String nombre, String pp, String key) {
         this.correo = correo;
         this.nombre = nombre;

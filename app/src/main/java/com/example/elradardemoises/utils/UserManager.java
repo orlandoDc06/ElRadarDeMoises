@@ -64,7 +64,6 @@ public class UserManager {
 
     public static void actualizarDatosBasicosUsuario(FirebaseUser firebaseUser, DatabaseReference databaseReference) {
         if (firebaseUser == null || databaseReference == null) {
-            Log.e(TAG, "FirebaseUser o DatabaseReference es null");
             return;
         }
 
@@ -77,7 +76,6 @@ public class UserManager {
 
         String fotoPerfil = obtenerUrlFotoMejorada(firebaseUser);
         actualizaciones.put("pp", fotoPerfil);
-        Log.d(TAG, "Actualizando foto de perfil a: " + fotoPerfil);
 
         if (firebaseUser.getEmail() != null) {
             actualizaciones.put("correo", firebaseUser.getEmail());
@@ -85,14 +83,13 @@ public class UserManager {
 
         databaseReference.child("usuarios").child(userId).updateChildren(actualizaciones)
                 .addOnSuccessListener(aVoid -> {
-                    Log.d(TAG, "Datos básicos del usuario actualizados exitosamente");
+                    Log.d(TAG, "Actualizados");
                 })
                 .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error al actualizar datos básicos: " + e.getMessage());
+                    Log.e(TAG, "Error al actualizar : " + e.getMessage());
                 });
     }
 
-    //guarda usuario solo si no existe
     public static void guardarUsuarioSiNoExiste(FirebaseUser firebaseUser, DatabaseReference databaseReference, ListenerGuardadoUsuario listener) {
         if (firebaseUser == null) {
             if (listener != null) {
@@ -141,7 +138,6 @@ public class UserManager {
         String fotoPerfil = obtenerUrlFotoMejorada(firebaseUser);
         usuario.setPp(fotoPerfil);
 
-        // Usar el UID como key
         usuario.setKey(firebaseUser.getUid());
 
         Log.d(TAG, "Usuario creado con foto: " + fotoPerfil);
@@ -162,23 +158,18 @@ public class UserManager {
         return nombre;
     }
 
-    // Método mejorado para obtener URL de foto de perfil
     private static String obtenerUrlFotoMejorada(FirebaseUser firebaseUser) {
         if (firebaseUser.getPhotoUrl() != null) {
             String urlOriginal = firebaseUser.getPhotoUrl().toString();
             Log.d(TAG, "URL original de foto en UserManager: " + urlOriginal);
 
-            // Si es una URL de Google, mejorar la calidad y tamaño
             if (urlOriginal.contains("googleusercontent.com")) {
-                // Reemplazar parámetros de tamaño para obtener mejor calidad
                 String urlMejorada = urlOriginal;
 
-                // Cambiar s96-c por s400-c para mejor resolución
                 if (urlMejorada.contains("s96-c")) {
                     urlMejorada = urlMejorada.replace("s96-c", "s400-c");
                 }
 
-                // Si no tiene parámetros de tamaño, agregarlos
                 if (!urlMejorada.contains("=s")) {
                     if (urlMejorada.contains("?")) {
                         urlMejorada += "&sz=400";
@@ -187,18 +178,15 @@ public class UserManager {
                     }
                 }
 
-                Log.d(TAG, "URL mejorada en UserManager: " + urlMejorada);
                 return urlMejorada;
             }
 
             return urlOriginal;
         }
 
-        Log.d(TAG, "No hay URL de foto disponible en UserManager");
         return "";
     }
 
-    // Método para obtener URL de foto de alta calidad específicamente
     public static String obtenerUrlFotoAltaCalidad(FirebaseUser firebaseUser) {
         return obtenerUrlFotoMejorada(firebaseUser);
     }

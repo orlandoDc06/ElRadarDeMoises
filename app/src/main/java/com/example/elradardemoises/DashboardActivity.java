@@ -20,8 +20,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.elradardemoises.models.Dht11;
 import com.example.elradardemoises.models.Usuario;
 import com.example.elradardemoises.utils.UserManager;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,16 +32,26 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class DashboardActivity extends AppCompatActivity {
     private static final String TAG = "DashboardActivity";
 
-    // UI Elements
     private TextView tvUserName, tvUserEmail;
     private ImageView ivProfilePicture;
+    private MaterialButton btnLogout;
 
-    // Firebase
+    private TextView tvTemperatura, tvHumedad, tvTimestamp;
+    private MaterialButton btnRefreshWeather;
+
     private DatabaseReference databaseReference;
     private Usuario usuarioActual;
+    private Dht11 datosMeteorologicos;
+
+
+    private ValueEventListener weatherListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,21 +67,141 @@ public class DashboardActivity extends AppCompatActivity {
 
         initializeViews();
         initializeFirebase();
+        setupClickListeners();
         cargarDatosUsuario();
+        cargarDatosMeteorologicos();
     }
 
     private void initializeViews() {
         tvUserName = findViewById(R.id.tvUserName);
         tvUserEmail = findViewById(R.id.tvUserEmail);
         ivProfilePicture = findViewById(R.id.ivProfilePicture);
+        btnLogout = findViewById(R.id.btnLogout);
+
+        tvTemperatura = findViewById(R.id.tvTemperatura);
+        tvHumedad = findViewById(R.id.tvHumedad);
+        tvTimestamp = findViewById(R.id.tvTimestamp);
+        btnRefreshWeather = findViewById(R.id.btnRefreshWeather);
     }
 
     private void initializeFirebase() {
         databaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
+    private void setupClickListeners() {
+        btnLogout.setOnClickListener(v -> mostrarDialogoConfirmacion());
+
+        btnRefreshWeather.setOnClickListener(v -> {
+            btnRefreshWeather.animate().rotation(360).setDuration(500).start();
+            cargarDatosMeteorologicos();
+            Toast.makeText(this, "Actualizando datos...", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void mostrarDialogoConfirmacion() {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Cerrar Sesión")
+                .setMessage("¿Estás seguro de que quieres cerrar sesión?")
+                .setPositiveButton("Sí", (dialog, which) -> cerrarSesion())
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void cargarDatosMeteorologicos() {
+        if (weatherListener != null) {
+            databaseReference.child("dht11").removeEventListener(weatherListener);
+        }
+
+        weatherListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Dht11 ultimosDatos = null;
+
+
+                    if (snapshot.hasChild("actual")) {
+                        ultimosDatos = snapshot.child("actual").getValue(Dht11.class);
+                    }
+
+                    else {
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            ultimosDatos = child.getValue(Dht11.class);
+
+                        }
+                    }
+
+                    if (ultimosDatos != null) {
+                        datosMeteorologicos = ultimosDatos;
+                        mostrarDatosMeteorologicos(ultimosDatos);
+
+                    }
+                } else {
+                    Log.d(TAG, "No hay datos meteorológicos disponibles");
+                    mostrarDatosVacios();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error al cargar datos meteorológicos: " + error.getMessage());
+                Toast.makeText(DashboardActivity.this,
+                        "Error al cargar datos meteorológicos", Toast.LENGTH_SHORT).show();
+                mostrarDatosVacios();
+            }
+        };
+
+        databaseReference.child("dht11").addValueEventListener(weatherListener);
+    }
+
+    private void mostrarDatosMeteorologicos(Dht11 datos) {
+        if (datos != null) {
+
+            double temperatura = datos.getTemperatura();
+            if (temperatura != 0) {
+                tvTemperatura.setText(String.format("%.1f°C", temperatura));
+            } else {
+                tvTemperatura.setText("-- °C");
+            }
+
+            int humedad = datos.getHumedad();
+            if (humedad != 0) {
+                tvHumedad.setText(humedad + "%");
+            } else {
+                tvHumedad.setText("-- %");
+            }
+
+            String timestamp = datos.getTimestamp();
+            if (timestamp != null && !timestamp.isEmpty()) {
+                tvTimestamp.setText("Última actualización: " + datos.getTimestampFormateado());
+            } else {
+                tvTimestamp.setText("Última actualización: " +
+                        new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date()));
+            }
+        }
+    }
+
+    private void mostrarDatosVacios() {
+        tvTemperatura.setText("-- °C");
+        tvHumedad.setText("-- %");
+        tvTimestamp.setText("Sin datos disponibles");
+    }
+
+    private String formatearTimestamp(String timestamp) {
+        try {
+            if (timestamp.matches("\\d+")) {
+                long time = Long.parseLong(timestamp);
+                Date date = new Date(time);
+                return new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(date);
+            }
+            return timestamp;
+        } catch (Exception e) {
+            Log.e(TAG, "Error: " + e.getMessage());
+            return timestamp;
+        }
+    }
+
+
     private void cargarDatosUsuario() {
-        // Primero intentar obtener datos del Intent
         Intent intent = getIntent();
         String userEmail = intent.getStringExtra("user_email");
         String userName = intent.getStringExtra("user_name");
@@ -80,12 +212,10 @@ public class DashboardActivity extends AppCompatActivity {
             if (userName != null && !userName.isEmpty()) {
                 tvUserName.setText(userName);
             } else {
-                // Extraer nombre del correo si no hay displayName
                 String nombreExtraido = Usuario.extraerNombreDeCorreo(userEmail);
                 tvUserName.setText(nombreExtraido);
             }
         } else {
-            // Si no hay datos en el Intent, cargar desde Firebase
             cargarDatosDesdeFirebase();
         }
     }
@@ -111,15 +241,12 @@ public class DashboardActivity extends AppCompatActivity {
                                 mostrarDatosUsuario(usuario);
                             }
                         } else {
-                            // Si no existe, crearlo usando UserManager
                             UserManager.guardarUsuarioEnBaseDatos(currentUser, databaseReference);
 
-                            // Crear usuario temporal para mostrar
                             Usuario usuarioTemp = new Usuario();
                             usuarioTemp.setCorreo(currentUser.getEmail());
                             usuarioTemp.setNombre(obtenerNombreUsuario(currentUser));
 
-                            // Obtener URL de foto mejorada
                             String urlFoto = obtenerUrlFotoMejorada(currentUser);
                             usuarioTemp.setPp(urlFoto);
                             usuarioTemp.setKey(uid);
@@ -157,11 +284,8 @@ public class DashboardActivity extends AppCompatActivity {
             String urlOriginal = firebaseUser.getPhotoUrl().toString();
             Log.d(TAG, "URL original de foto: " + urlOriginal);
 
-            // Si es una URL de Google, mejorar la calidad
             if (urlOriginal.contains("googleusercontent.com")) {
-                // Cambiar el tamaño por defecto por uno más grande
                 String urlMejorada = urlOriginal.replace("s96-c", "s400-c");
-
                 return urlMejorada;
             }
 
@@ -172,20 +296,13 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void mostrarDatosUsuario(Usuario usuario) {
-        // Actualizar textos
         tvUserName.setText(usuario.getNombre());
-        //tvUserEmail.setText("Email: " + usuario.getCorreo());
-
-        // Cargar foto de perfil con debug
         Log.d(TAG, "Intentando cargar foto de perfil: " + usuario.getPp());
         cargarFotoPerfil(usuario.getPp());
     }
 
     private void cargarFotoPerfil(String urlFoto) {
-
         if (urlFoto != null && !urlFoto.isEmpty()) {
-
-            // Configuración más robusta de Glide
             RequestOptions requestOptions = new RequestOptions()
                     .transform(new CircleCrop())
                     .placeholder(R.drawable.ic_person_placeholder)
@@ -201,7 +318,6 @@ public class DashboardActivity extends AppCompatActivity {
             Log.d(TAG, "Glide load iniciado para: " + urlFoto);
         } else {
             Log.d(TAG, "URL de foto vacía o null");
-            // Mostrar imagen por defecto
             ivProfilePicture.setImageResource(R.drawable.ic_person_placeholder);
         }
     }
@@ -229,12 +345,7 @@ public class DashboardActivity extends AppCompatActivity {
             cerrarSesion();
             return true;
         } else if (id == R.id.action_profile) {
-            // Abrir actividad de perfil (opcional)
             Toast.makeText(this, "Perfil", Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (id == R.id.action_profile) {
-            // Opción para recargar foto (agregar en el menú si es necesario)
-            cargarFotoDirectaDesdeFirebase();
             return true;
         }
 
@@ -253,12 +364,18 @@ public class DashboardActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Recargar datos cuando se vuelve a la actividad
         if (usuarioActual != null) {
             mostrarDatosUsuario(usuarioActual);
         } else {
-            // Si no hay datos, intentar cargar foto directamente
             cargarFotoDirectaDesdeFirebase();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (weatherListener != null && databaseReference != null) {
+            databaseReference.child("dht11").removeEventListener(weatherListener);
         }
     }
 }

@@ -8,7 +8,7 @@
     android:padding="24dp"
     android:background="@color/colorBackground">
 
-    <!-- Header Card -->
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -22,15 +22,42 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <TextView
-                android:id="@+id/tvWelcome"
-                android:layout_width="wrap_content"
+            <!-- Header con bienvenida y botón de cerrar sesión -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="¡Bienvenido!"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginBottom="16dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/tvWelcome"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="¡Bienvenido!"
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimary" />
+
+                <!-- Botón de cerrar sesión -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cerrar Sesión"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/colorAccent"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    app:cornerRadius="20dp"
+                    app:icon="@android:drawable/ic_menu_close_clear_cancel"
+                    app:iconTint="@color/white"
+                    app:iconSize="16dp"
+                    app:iconGravity="textStart" />
+
+            </LinearLayout>
 
             <!-- Contenedor horizontal para foto y datos -->
             <LinearLayout
@@ -83,6 +110,156 @@
 
     </androidx.cardview.widget.CardView>
 
+    <!-- Estación Meteorológica Card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="@color/colorSurface">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Título de la estación meteorológica -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Datos Meteorologicos"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimary" />
+
+                <!-- Botón de actualizar -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRefreshWeather"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:backgroundTint="@color/colorPrimary"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:padding="0dp"
+                    app:cornerRadius="20dp"
+                    app:icon="@android:drawable/ic_popup_sync"
+                    app:iconPadding="0dp"
+                    app:iconSize="20dp"
+                    app:iconTint="@color/white" />
+
+            </LinearLayout>
+
+            <!-- Contenedor de datos meteorológicos -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <!-- Temperatura -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:background="@drawable/weather_card_background"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🌡️"
+                        android:textSize="24sp"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvTemperatura"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-- °C"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Temperatura"
+                        android:textSize="12sp"
+                        android:textColor="@color/colorTextSecondary" />
+
+                </LinearLayout>
+
+                <!-- Humedad -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="16dp"
+                    android:background="@drawable/weather_card_background"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💧"
+                        android:textSize="24sp"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:id="@+id/tvHumedad"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="-- %"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimary"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Humedad"
+                        android:textSize="12sp"
+                        android:textColor="@color/colorTextSecondary" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- Timestamp -->
+            <TextView
+                android:id="@+id/tvTimestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Última actualización: --"
+                android:textSize="12sp"
+                android:textColor="@color/colorTextSecondary"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:drawableStart="@android:drawable/ic_dialog_info"
+                android:drawablePadding="4dp"
+                android:gravity="center_vertical" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
     <!-- Content Area -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -97,24 +274,6 @@
             android:orientation="vertical"
             android:padding="24dp"
             android:gravity="center">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="El Radar de Moises"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorPrimary"
-                android:layout_marginBottom="16dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="¡Has iniciado sesión exitosamente!"
-                android:textSize="18sp"
-                android:textColor="@color/colorTextPrimary"
-                android:textAlignment="center"
-                android:layout_marginBottom="32dp" />
 
 
 
