@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements AuthManager.Callb
     }
 
     private void navegarADashboard(FirebaseUser user) {
-        Intent intent = new Intent(this, DashboardActivity.class);
+        Intent intent = new Intent(this, MainDashboardActivity.class);
         intent.putExtra("user_email", user.getEmail());
         intent.putExtra("user_name", user.getDisplayName());
         intent.putExtra("user_id", user.getUid());
