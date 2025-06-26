@@ -6,14 +6,12 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
-
-
+    android:background="@drawable/gradient_background"
+ >
   <FrameLayout
       android:id="@+id/fragmentContainer"
       android:layout_width="match_parent"
-      android:layout_height="0dp"
-      android:layout_marginBottom="12dp"
+      android:layout_height="wrap_content"
       android:layout_weight="1"
       android:elevation="6dp" />
 
@@ -21,8 +19,12 @@
       android:id="@+id/bottomNavigation"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:background="@color/colorTextPrimary"
+      android:padding="0dp"
+      app:itemActiveIndicatorStyle="@drawable/bottom_nav_background"
       app:itemIconSize="28dp"
-      android:background="#29B2BC"
+      app:itemPaddingTop="8dp"
+      app:itemPaddingBottom="8dp"
       app:labelVisibilityMode="auto"
-      app:menu="@menu/menu_navegacion"/>
+      app:menu="@menu/menu_navegacion" />
 </LinearLayout>

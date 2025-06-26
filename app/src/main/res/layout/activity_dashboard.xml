@@ -1,450 +1,431 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".fragments.Fragment_principal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:id="@+id/main"
-    android:padding="24dp"
-    android:background="@color/colorBackground">
+    android:background="@drawable/gradient_background"
+    android:fillViewport="true">
 
-    <!-- User Profile Card -->
-    <androidx.cardview.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="8dp">
+        android:orientation="vertical"
+        android:padding="20dp">
 
+        <!-- Header con perfil y logout -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="32dp"
+            android:layout_marginTop="16dp">
 
-            <!-- Header con bienvenida y botón de cerrar sesión -->
+            <!-- Perfil compacto -->
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
-
-                <TextView
-                    android:id="@+id/tvWelcome"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="¡Bienvenido!"
-                    android:textSize="24sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/colorPrimary" />
-
-                <!-- Botón de cerrar sesión -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnLogout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Cerrar Sesión"
-                    android:textSize="12sp"
-                    android:textColor="@color/white"
-                    android:backgroundTint="@color/colorAccent"
-                    android:paddingHorizontal="16dp"
-                    android:paddingVertical="8dp"
-                    app:cornerRadius="20dp"
-                    app:icon="@android:drawable/ic_menu_close_clear_cancel"
-                    app:iconTint="@color/white"
-                    app:iconSize="16dp"
-                    app:iconGravity="textStart" />
-
-            </LinearLayout>
-
-            <!-- Contenedor horizontal para foto y datos -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
-                <!-- Foto de perfil -->
                 <ImageView
                     android:id="@+id/ivProfilePicture"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_marginEnd="16dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="12dp"
                     android:src="@drawable/ic_person_placeholder"
                     android:scaleType="centerCrop"
-                    android:background="@drawable/circle_background"
-                    android:padding="2dp" />
+                    android:background="@drawable/circle_background_ios"
+                    android:elevation="2dp" />
 
-                <!-- Contenedor vertical para nombre y email -->
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/tvUserName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Nombre: Usuario"
+                        android:text="Usuario"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="@color/colorTextPrimary"
-                        android:layout_marginBottom="4dp" />
+                        android:textColor="@color/white"
+                        android:shadowColor="#40000000"
+                        android:shadowDx="0"
+                        android:shadowDy="1"
+                        android:shadowRadius="2" />
 
                     <TextView
                         android:id="@+id/tvUserEmail"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Email: usuario@ejemplo.com"
-                        android:textSize="14sp"
-                        android:textColor="@color/colorTextSecondary" />
+                        android:textSize="13sp"
+                        android:textColor="#E0FFFFFF"
+                        android:shadowColor="#40000000"
+                        android:shadowDx="0"
+                        android:shadowDy="1"
+                        android:shadowRadius="2" />
 
                 </LinearLayout>
 
             </LinearLayout>
 
+            <!-- Botón logout estilo iOS -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogout"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:backgroundTint="#20FFFFFF"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:padding="0dp"
+                app:cornerRadius="18dp"
+                app:icon="@android:drawable/ic_menu_close_clear_cancel"
+                app:iconPadding="0dp"
+                app:iconSize="18dp"
+                app:iconTint="@color/white"
+                app:strokeColor="#30FFFFFF"
+                app:strokeWidth="1dp"
+                android:elevation="4dp" />
+
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+        <!-- Ubicación y bienvenida -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginBottom="40dp">
 
-    <!-- ScrollView para contener ambas cards de sensores -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📍 San Miguel"
+                android:textSize="16sp"
+                android:textColor="#E0FFFFFF"
+                android:layout_marginBottom="8dp"
+                android:shadowColor="#40000000"
+                android:shadowDx="0"
+                android:shadowDy="1"
+                android:shadowRadius="2" />
 
+            <TextView
+                android:id="@+id/tvWelcome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="El Radar de Moises"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textAlignment="center"
+                android:shadowColor="#40000000"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="4" />
+
+        </LinearLayout>
+
+        <!-- Card principal de temperatura (estilo iOS grande) -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/transparent"
+            android:background="@drawable/glass_card_background">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="32dp"
+                android:gravity="center"
+                android:background="@drawable/glass_card_background">
+
+                <!-- Temperatura grande -->
+                <TextView
+                    android:id="@+id/tvTemperatura"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="--"
+                    android:textSize="72sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:layout_marginBottom="8dp"
+                    android:fontFamily="sans-serif-light"
+                    android:shadowColor="#40000000"
+                    android:shadowDx="0"
+                    android:shadowDy="3"
+                    android:shadowRadius="6" />
+
+
+                <!-- Timestamp -->
+                <TextView
+                    android:id="@+id/tvTimestamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Actualizado hace 5 min"
+                    android:textSize="14sp"
+                    android:textColor="#B0FFFFFF" />
+
+                <!-- Botón de actualizar elegante -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnRefreshWeather"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Actualizar"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    android:backgroundTint="#30FFFFFF"
+                    android:paddingHorizontal="20dp"
+                    app:cornerRadius="18dp"
+                    app:strokeColor="#40FFFFFF"
+                    app:strokeWidth="1dp"
+                    app:icon="@android:drawable/ic_popup_sync"
+                    app:iconTint="@color/white"
+                    app:iconSize="16dp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Grid de métricas adicionales (estilo iOS) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- DHT11 - Estación Meteorológica Card -->
-            <androidx.cardview.widget.CardView
+            <!-- Primera fila: Humedad y Sensación térmica -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="8dp"
-                app:cardBackgroundColor="@color/colorSurface">
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="16dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                <!-- Humedad -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
 
-                    <!-- Título de la estación meteorológica -->
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="16dp">
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
 
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Datos Climáticos"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/colorPrimary" />
-
-                        <!-- Botón de actualizar -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnRefreshWeather"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:backgroundTint="@color/colorPrimary"
-                            android:insetTop="0dp"
-                            android:insetBottom="0dp"
-                            android:padding="0dp"
-                            app:cornerRadius="20dp"
-                            app:icon="@android:drawable/ic_popup_sync"
-                            app:iconPadding="0dp"
-                            app:iconSize="20dp"
-                            app:iconTint="@color/white" />
-
-                    </LinearLayout>
-
-                    <!-- Contenedor de datos meteorológicos -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="2">
-
-                        <!-- Temperatura -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="16dp"
-                            android:background="@drawable/weather_card_background"
-                            android:layout_marginEnd="8dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="🌡️"
-                                android:textSize="24sp"
-                                android:layout_marginBottom="8dp" />
-
-                            <TextView
-                                android:id="@+id/tvTemperatura"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="-- °C"
-                                android:textSize="20sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/colorPrimary"
-                                android:layout_marginBottom="4dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Temperatura"
-                                android:textSize="12sp"
-                                android:textColor="@color/colorTextSecondary" />
-
-                        </LinearLayout>
-
-                        <!-- Humedad -->
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="16dp"
-                            android:background="@drawable/weather_card_background"
-                            android:layout_marginStart="8dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="💧"
-                                android:textSize="24sp"
-                                android:layout_marginBottom="8dp" />
-
-                            <TextView
-                                android:id="@+id/tvHumedad"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="-- %"
-                                android:textSize="20sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/colorPrimary"
-                                android:layout_marginBottom="4dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Humedad"
-                                android:textSize="12sp"
-                                android:textColor="@color/colorTextSecondary" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                    <!-- Timestamp DHT11 -->
-                    <TextView
-                        android:id="@+id/tvTimestamp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Última actualización: --"
-                        android:textSize="12sp"
-                        android:textColor="@color/colorTextSecondary"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="12dp"
-                        android:drawableStart="@android:drawable/ic_dialog_info"
-                        android:drawablePadding="4dp"
-                        android:gravity="center_vertical" />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
-
-            <!-- BMP180 - Datos Barométricos Card -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="8dp"
-                app:cardBackgroundColor="@color/colorSurface">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <!-- Título de datos barométricos -->
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Datos Barométricos"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginBottom="16dp" />
-
-                    <!-- Contenedor de datos barométricos -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <!-- Primera fila: Altitud y Presión -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:weightSum="2"
-                            android:layout_marginBottom="12dp">
-
-                            <!-- Altitud -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                android:padding="16dp"
-                                android:background="@drawable/weather_card_background"
-                                android:layout_marginEnd="8dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="🏔️"
-                                    android:textSize="24sp"
-                                    android:layout_marginBottom="8dp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="-- m"
-                                    android:id="@+id/tvAltitud"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold"
-                                    android:textColor="@color/colorPrimary"
-                                    android:layout_marginBottom="4dp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Altitud"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/colorTextSecondary" />
-
-                            </LinearLayout>
-
-                            <!-- Presión -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="center"
-                                android:padding="16dp"
-                                android:background="@drawable/weather_card_background"
-                                android:layout_marginStart="8dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="📊"
-                                    android:textSize="24sp"
-                                    android:layout_marginBottom="8dp" />
-
-                                <TextView
-                                    android:id="@+id/tvPresion"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="-- hPa"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold"
-                                    android:textColor="@color/colorPrimary"
-                                    android:layout_marginBottom="4dp" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Presión"
-                                    android:textSize="12sp"
-                                    android:textColor="@color/colorTextSecondary" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                        <!-- Segunda fila: Presión a nivel del mar -->
-                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:gravity="center"
-                            android:padding="16dp"
-                            android:background="@drawable/weather_card_background">
+                            android:text="HUMEDAD"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="🌊"
-                                android:textSize="24sp"
-                                android:layout_marginBottom="8dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="💧"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
 
-                            <TextView
-                                android:id="@+id/tvPresionNivelMar"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="-- hPa"
-                                android:textSize="18sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/colorPrimary"
-                                android:layout_marginBottom="4dp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Presión Nivel Mar"
-                                android:textSize="12sp"
-                                android:textColor="@color/colorTextSecondary" />
-
-                        </LinearLayout>
+                        <TextView
+                            android:id="@+id/tvHumedad"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--%"
+                            android:textSize="28sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
 
                     </LinearLayout>
 
-                    <!-- Timestamp BMP180 -->
-                    <TextView
-                        android:id="@+id/tvTimestampBmp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Última actualización: --"
-                        android:textSize="12sp"
-                        android:textColor="@color/colorTextSecondary"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="12dp"
-                        android:drawableStart="@android:drawable/ic_dialog_info"
-                        android:drawablePadding="4dp"
-                        android:gravity="center_vertical" />
+                </androidx.cardview.widget.CardView>
 
-                </LinearLayout>
+                <!-- Presión -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
 
-            </androidx.cardview.widget.CardView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="PRESIÓN"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📊"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tvPresion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-- hPa"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <!-- Segunda fila: Altitud y Presión nivel del mar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <!-- Altitud -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ALTITUD"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🏔️"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tvAltitud"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-- m"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Presión nivel del mar -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="PRESIÓN MAR"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🌊"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tvPresionNivelMar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-- hPa"
+                            android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </ScrollView>
+        <!-- Timestamp general -->
+        <TextView
+            android:id="@+id/tvTimestampBmp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:text="Datos barométricos actualizados"
+            android:textSize="13sp"
+            android:textColor="#90FFFFFF"
+            android:drawableStart="@android:drawable/ic_dialog_info"
+            android:drawableTint="#90FFFFFF"
+            android:drawablePadding="6dp"
+            android:gravity="center_vertical" />
 
-</LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

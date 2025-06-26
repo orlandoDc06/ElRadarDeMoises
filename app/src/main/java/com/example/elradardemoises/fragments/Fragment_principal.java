@@ -2,10 +2,13 @@ package com.example.elradardemoises.fragments;
 
 import static android.content.Intent.getIntent;
 
+import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -23,10 +26,13 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.elradardemoises.DashboardActivity;
+import com.example.elradardemoises.GestorFiltroFecha;
 import com.example.elradardemoises.MainActivity;
 import com.example.elradardemoises.R;
+import com.example.elradardemoises.Ubicacion;
 import com.example.elradardemoises.models.Bmp180;
 import com.example.elradardemoises.models.Dht11;
+import com.example.elradardemoises.models.LLuvia;
 import com.example.elradardemoises.models.Usuario;
 import com.example.elradardemoises.utils.UserManager;
 import com.google.android.material.button.MaterialButton;
@@ -36,70 +42,76 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Fragment_principal#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class Fragment_principal extends Fragment {
+public class Fragment_principal extends Fragment implements GestorFiltroFecha.FiltroFechaListener,
+        Ubicacion.LocationCallback{
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    //Declaraciones de variables
     private static final String TAG = "DashboardActivity";
 
     private TextView tvUserName, tvUserEmail;
     private ImageView ivProfilePicture;
     private MaterialButton btnLogout;
 
-    // DHT11 Views
+    // DHT11
     private TextView tvTemperatura, tvHumedad, tvTimestamp;
 
-    // BMP180 Views
+    // BMP180
     private TextView tvAltitud, tvPresion, tvPresionNivelMar, tvTimestampBmp;
 
+    // LLUVIA
+    private TextView tvLluvia;
+
     private MaterialButton btnRefreshWeather;
+
+    // Nuevos elementos para filtro de fecha
+    private MaterialButton btnFiltrarFecha, btnLimpiarFiltro;
+    private TextView tvFechaSeleccionada;
 
     private DatabaseReference databaseReference;
     private Usuario usuarioActual;
     private Dht11 datosMeteorologicos;
     private Bmp180 datosBarometricos;
+    private LLuvia datosLluvia;
+
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+    private FusedLocationProviderClient fusedLocationClient;
+    private TextView lblUbicacion;
 
     private ValueEventListener weatherListener;
     private ValueEventListener bmpListener;
+    private ValueEventListener lluviaListener;
 
+    private GestorFiltroFecha gestorFiltroFecha;
+    private Ubicacion ubicacion;
 
     public Fragment_principal() {
-        // Required empty public constructor
+
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Fragment_principal.
-     */
-    // TODO: Rename and change types and number of parameters
     public static Fragment_principal newInstance(String param1, String param2) {
         Fragment_principal fragment = new Fragment_principal();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -107,17 +119,12 @@ public class Fragment_principal extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        //return inflater.inflate(R.layout.fragment_principal, container, false);
         View view = inflater.inflate(R.layout.fragment_principal, container, false);
 
         initializeViews(view);
@@ -126,12 +133,14 @@ public class Fragment_principal extends Fragment {
         cargarDatosUsuario();
         cargarDatosMeteorologicos();
         cargarDatosBarometricos();
+        cargarDatosLluvia();
+        initializeLocation();
 
-
+        gestorFiltroFecha.inicializarVistas(view);
+        gestorFiltroFecha.configurarClickListeners();
         return view;
     }
 
-    ///
     private void initializeViews(View view) {
         tvUserName = view.findViewById(R.id.tvUserName);
         tvUserEmail = view.findViewById(R.id.tvUserEmail);
@@ -149,22 +158,98 @@ public class Fragment_principal extends Fragment {
         tvPresionNivelMar = view.findViewById(R.id.tvPresionNivelMar);
         tvTimestampBmp = view.findViewById(R.id.tvTimestampBmp);
 
+        // LLUVIA View
+        tvLluvia = view.findViewById(R.id.tvLluvia);
+
+        lblUbicacion = view.findViewById(R.id.lblUbicacion);
+
         btnRefreshWeather = view.findViewById(R.id.btnRefreshWeather);
+
     }
 
     private void initializeFirebase() {
-        databaseReference = FirebaseDatabase.getInstance().getReference();
+      //  databaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
     private void setupClickListeners() {
         btnLogout.setOnClickListener(v -> mostrarDialogoConfirmacion());
 
         btnRefreshWeather.setOnClickListener(v -> {
-            btnRefreshWeather.animate().rotation(360).setDuration(500).start();
-            cargarDatosMeteorologicos();
-            cargarDatosBarometricos();
+            btnRefreshWeather.animate().rotation(0).setDuration(500).start();
+            if (gestorFiltroFecha.getFechaSeleccionada() != null) {
+                gestorFiltroFecha.cargarDatosPorFecha(gestorFiltroFecha.getFechaSeleccionada());
+            } else {
+                cargarDatosMeteorologicos();
+                cargarDatosBarometricos();
+                cargarDatosLluvia();
+            }
             Toast.makeText(requireContext(), "Actualizando datos...", Toast.LENGTH_SHORT).show();
         });
+
+    }
+
+    @Override
+    public void onFechaSeleccionada(String fecha) {
+        Log.d("Fragment", "Fecha seleccionada: " + fecha);
+    }
+
+    @Override
+    public void onFiltroLimpiado() {
+        cargarDatosMeteorologicos();
+        cargarDatosBarometricos();
+        cargarDatosLluvia();
+    }
+
+    public void onDatosMeteorologicos(Dht11 datos) {
+        datosMeteorologicos = datos;
+        mostrarDatosMeteorologicos(datos);
+    }
+
+
+    @Override
+    public void onDatosBarometricos(Bmp180 datos) {
+        datosBarometricos = datos;
+        mostrarDatosBarometricos(datos);
+    }
+
+    @Override
+    public void onDatosLluvia(LLuvia datos) {
+        datosLluvia = datos;
+        mostrarDatosLluvia(datos);
+    }
+
+
+    @Override
+    public void onDatosVaciosMeteorologicos() {
+        mostrarDatosVaciosDht11();
+    }
+
+    @Override
+    public void onDatosVaciosBarometricos() {
+        mostrarDatosVaciosBmp180();
+    }
+
+    @Override
+    public void onDatosVaciosLluvia() {
+        mostrarDatosVaciosLluvia();
+    }
+
+    @Override
+    public Context getContext() {
+        return super.getContext();
+    }
+
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        gestorFiltroFecha = new GestorFiltroFecha(this);
+    }
+
+    @Override
+    public DatabaseReference getDatabaseReference() {
+        return databaseReference;
     }
 
     private void mostrarDialogoConfirmacion() {
@@ -174,6 +259,104 @@ public class Fragment_principal extends Fragment {
                 .setPositiveButton("Sí", (dialog, which) -> cerrarSesion())
                 .setNegativeButton("Cancelar", null)
                 .show();
+    }
+
+    private void initializeLocation() {
+        ubicacion = new Ubicacion(this, lblUbicacion);
+        ubicacion.initializeLocation();
+    }
+
+    @Override
+    public void onLocationObtained(String locationText) {
+        Log.d("Fragment", "Ubicación obtenida: " + locationText);
+    }
+
+    @Override
+    public void onLocationError(String error) {
+        Log.e("Fragment", "Error de ubicación: " + error);
+    }
+
+    @Override
+    public void onPermissionDenied() {
+        // Manejar cuando el usuario niega los permisos
+        Log.w("Fragment", "Permisos de ubicación denegados");
+    }
+
+    public void refreshLocation() {
+        if (ubicacion != null) {
+            ubicacion.refreshLocation();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+
+        ubicacion.handlePermissionResult(requestCode, permissions, grantResults);
+    }
+
+    private void cargarDatosLluvia() {
+        if (lluviaListener != null) {
+            databaseReference.child("lluvia").removeEventListener(lluviaListener);
+        }
+
+        lluviaListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    LLuvia ultimosDatos = null;
+
+                    if (snapshot.hasChild("actual")) {
+                        ultimosDatos = snapshot.child("actual").getValue(LLuvia.class);
+                    } else {
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            ultimosDatos = child.getValue(LLuvia.class);
+                        }
+                    }
+
+                    if (ultimosDatos != null) {
+                        datosLluvia = ultimosDatos;
+                        mostrarDatosLluvia(ultimosDatos);
+                    }
+                } else {
+                    Log.d(TAG, "No hay datos de lluvia disponibles");
+                    mostrarDatosVaciosLluvia();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error al cargar datos de lluvia: " + error.getMessage());
+                Toast.makeText(requireContext(),
+                        "Error al cargar datos de lluvia", Toast.LENGTH_SHORT).show();
+                mostrarDatosVaciosLluvia();
+            }
+        };
+
+        databaseReference.child("lluvia").addValueEventListener(lluviaListener);
+    }
+
+    private void mostrarDatosLluvia(LLuvia datos) {
+        if (datos != null && datos.getEstado() != null) {
+            TextView tvEmoji = getView().findViewById(R.id.tvEmojiLluvia);
+            if (tvEmoji != null) {
+                tvEmoji.setText(datos.getEmojiEstado());
+            }
+
+            tvLluvia.setText(datos.getEstadoFormateado());
+        } else {
+            mostrarDatosVaciosLluvia();
+        }
+    }
+
+    private void mostrarDatosVaciosLluvia() {
+        tvLluvia.setText("Sin datos");
+        TextView tvEmoji = getView().findViewById(R.id.tvEmojiLluvia);
+        if (tvEmoji != null) {
+            tvEmoji.setText("❓");
+        }
     }
 
     private void cargarDatosMeteorologicos() {
@@ -460,6 +643,7 @@ public class Fragment_principal extends Fragment {
             cargarFotoPerfil(urlFoto);
         }
     }
+
     private void cerrarSesion() {
         FirebaseAuth.getInstance().signOut();
 
@@ -469,14 +653,6 @@ public class Fragment_principal extends Fragment {
 
         requireActivity().finish();
     }
-
-    ///
-
-//    @Override
-//    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-//        inflater.inflate(R.menu.dashboard_menu, menu);
-//        super.onCreateOptionsMenu(menu, inflater);
-//    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -495,7 +671,7 @@ public class Fragment_principal extends Fragment {
 
     @Override
     public void onResume() {
-        super.onResume(); // Esto es opcional
+        super.onResume();
         if (usuarioActual != null) {
             mostrarDatosUsuario(usuarioActual);
         } else {
@@ -512,8 +688,11 @@ public class Fragment_principal extends Fragment {
         if (bmpListener != null && databaseReference != null) {
             databaseReference.child("bmp180").removeEventListener(bmpListener);
         }
+        if (lluviaListener != null && databaseReference != null) {
+            databaseReference.child("lluvia").removeEventListener(lluviaListener);
+        }
+        if (gestorFiltroFecha != null) {
+            gestorFiltroFecha.limpiarListeners();
+        }
     }
-
-
-    //
 }

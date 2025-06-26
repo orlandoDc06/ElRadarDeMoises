@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.elradardemoises.fragments.FragmentGraficas;
 import com.example.elradardemoises.fragments.Fragment_principal;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -28,6 +29,7 @@ public class MainDashboardActivity extends AppCompatActivity {
         });
 
         bottomNavigation = findViewById(R.id.bottomNavigation);
+        bottomNavigation.setPadding(0, 0, 0, 0);
 
         // Fragmento inicial
         loadFragment(new Fragment_principal());
@@ -40,9 +42,9 @@ public class MainDashboardActivity extends AppCompatActivity {
                 case R.id.nav_cambios:
                     fragment = new Fragment_principal();
                     break;
-//                case R.id.nav_clientes:
-//                    fragment = new FragmentCliente();
-//                    break;
+                case R.id.nav_graficas:
+                    fragment = new FragmentGraficas();
+                    break;
             }
             if (fragment != null) {
                 loadFragment(fragment);
