@@ -181,19 +181,6 @@
             android:visibility="gone" />
 
 
-        <!-- Card principal temperatura -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/transparent"
-            android:background="@drawable/glass_card_background">
-
-        </androidx.cardview.widget.CardView>
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -206,57 +193,7 @@
                 android:weightSum="2"
                 android:layout_marginBottom="16dp">
 
-                <!-- Humedad -->
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="140dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="@color/transparent">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:padding="20dp"
-                        android:background="@drawable/glass_card_small_background">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="HUMEDAD"
-                            android:layout_gravity="center"
-                            android:textSize="12sp"
-                            android:textColor="#B0FFFFFF"
-                            android:layout_marginBottom="8dp"
-                            android:letterSpacing="0.1" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="💧"
-                            android:textSize="20sp"
-                            android:layout_marginBottom="12dp" />
-
-                        <TextView
-                            android:id="@+id/tvHumedad"
-                            android:layout_gravity="center"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="--%"
-                            android:textSize="25sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/white"
-                            android:fontFamily="sans-serif-light" />
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
-                <!-- Presión -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -266,7 +203,7 @@
                     android:orientation="vertical"
                     android:padding="32dp">
 
-                    <!-- Temperatura grande -->
+                    <!-- Temperatura  -->
                     <TextView
                         android:id="@+id/tvTemperatura"
                         android:layout_width="wrap_content"
@@ -292,7 +229,6 @@
                         android:textColor="#B0FFFFFF"
                         android:textSize="14sp" />
 
-                    <!-- Botón de actualizar elegante -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnRefreshWeather"
                         android:layout_width="wrap_content"
@@ -312,54 +248,7 @@
 
                 </LinearLayout>
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="140dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp"
-                    app:cardBackgroundColor="@color/transparent">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:padding="20dp"
-                        android:background="@drawable/glass_card_small_background">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="PRESIÓN"
-                            android:layout_gravity="center"
-                            android:textSize="12sp"
-                            android:textColor="#B0FFFFFF"
-                            android:layout_marginBottom="8dp"
-                            android:letterSpacing="0.1" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="📊"
-                            android:layout_gravity="center"
-                            android:textSize="20sp"
-                            android:layout_marginBottom="12dp" />
-
-                        <TextView
-                            android:id="@+id/tvPresion"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="-- hPa"
-                            android:layout_gravity="center"
-                            android:textSize="24sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/white"
-                            android:fontFamily="sans-serif-light" />
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
 
             </LinearLayout>
 
@@ -462,6 +351,115 @@
                             android:text="-- hPa"
                             android:layout_gravity="center"
                             android:textSize="22sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginTop="18dp">
+
+                <!-- Presion -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="16dp"
+                    android:layout_marginEnd="8dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="PRESIÓN"
+                            android:layout_gravity="center"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="📊"
+                            android:layout_gravity="center"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tvPresion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-- hPa"
+                            android:layout_gravity="center"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Humedad -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    app:cardCornerRadius="16dp"
+                    android:layout_marginStart="10dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="HUMEDAD"
+                            android:layout_gravity="center"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="💧"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tvHumedad"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--%"
+                            android:textSize="25sp"
                             android:textStyle="bold"
                             android:textColor="@color/white"
                             android:fontFamily="sans-serif-light" />
@@ -811,12 +809,9 @@
 
                 </androidx.cardview.widget.CardView>
 
-
             </LinearLayout>
 
         </LinearLayout>
-
-
 
         <!-- Timestamp general -->
         <TextView
