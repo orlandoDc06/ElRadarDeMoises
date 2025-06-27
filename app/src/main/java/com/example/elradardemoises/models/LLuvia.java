@@ -17,7 +17,6 @@ public class LLuvia {
         this.timestamp = timestamp;
     }
 
-    // Getters
     public String getEstado() {
         return estado;
     }
@@ -26,7 +25,6 @@ public class LLuvia {
         return timestamp;
     }
 
-    // Setters
     public void setEstado(String estado) {
         this.estado = estado;
     }
@@ -64,9 +62,9 @@ public class LLuvia {
 
         switch (estadoLower) {
             case "seco":
-                return "Seco";
+                return "Soleado";
             case "aguacero":
-                return "Aguacero";
+                return "Diluvio";
             case "lluvia":
                 return "Lluvia";
             case "llovizna":
@@ -103,18 +101,6 @@ public class LLuvia {
         }
     }
 
-
-    public boolean estaLloviendo() {
-        if (estado == null || estado.isEmpty()) {
-            return false;
-        }
-
-        String estadoLower = estado.toLowerCase().trim();
-        return estadoLower.contains("lluvia") ||
-                estadoLower.contains("aguacero") ||
-                estadoLower.contains("llovizna") ||
-                estadoLower.contains("tormenta");
-    }
 
 
     @Override

@@ -16,6 +16,9 @@ import androidx.annotation.NonNull;
 import com.example.elradardemoises.models.Bmp180;
 import com.example.elradardemoises.models.Dht11;
 import com.example.elradardemoises.models.LLuvia;
+import com.example.elradardemoises.models.Mq2;
+import com.example.elradardemoises.models.Suelo;
+import com.example.elradardemoises.models.Viento;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,16 +38,22 @@ public class GestorFiltroFecha {
 
     private static final String TAG = "GestorFiltroFecha";
 
-    // Interface para callbacks
+    // Interface para 3
     public interface FiltroFechaListener {
         void onFechaSeleccionada(String fecha);
         void onFiltroLimpiado();
         void onDatosMeteorologicos(Dht11 datos);
         void onDatosBarometricos(Bmp180 datos);
         void onDatosLluvia(LLuvia datos);
+        void onDatosViento(Viento datos);
+        void onDatosGases(Mq2 datos);
+        void onDatosSuelo(Suelo datos);
         void onDatosVaciosMeteorologicos();
         void onDatosVaciosBarometricos();
         void onDatosVaciosLluvia();
+        void onDatosVaciosViento();
+        void onDatosVaciosGases();
+        void onDatosVaciosSuelo();
         void onPdfGenerado(String rutaArchivo);
         void onErrorGenerandoPdf(String error);
         Context getContext();
@@ -69,11 +78,17 @@ public class GestorFiltroFecha {
     private ValueEventListener weatherListener;
     private ValueEventListener bmpListener;
     private ValueEventListener lluviaListener;
+    private ValueEventListener vientoListener;
+    private ValueEventListener gasesListener;
+    private ValueEventListener sueloListener;
 
     // Datos actuales para PDF
     private Dht11 datosMeteorologicosActuales;
     private Bmp180 datosBarometricosActuales;
     private LLuvia datosLluviaActuales;
+    private Viento datosVientoActuales;
+    private Mq2 datosGasesActuales;
+    private Suelo datosSueloActuales;
 
     // Constructor
     public GestorFiltroFecha(FiltroFechaListener listener) {
@@ -107,6 +122,9 @@ public class GestorFiltroFecha {
         cargarDatosMeteorologicosPorFecha(fecha);
         cargarDatosBarometricosPorFecha(fecha);
         cargarDatosLluviaPorFecha(fecha);
+        cargarDatosVientoPorFecha(fecha);
+        cargarDatosGasesPorFecha(fecha);
+        cargarDatosSueloPorFecha(fecha);
     }
 
     public void limpiarListeners() {
@@ -118,6 +136,15 @@ public class GestorFiltroFecha {
         }
         if (lluviaListener != null) {
             databaseReference.child("lluvia").removeEventListener(lluviaListener);
+        }
+        if (vientoListener != null){
+            databaseReference.child("viento").removeEventListener(vientoListener);
+        }
+        if (gasesListener != null){
+            databaseReference.child("mq2").removeEventListener(gasesListener);
+        }
+        if (sueloListener != null){
+            databaseReference.child("suelo").removeEventListener(sueloListener);
         }
     }
 
@@ -322,21 +349,156 @@ public class GestorFiltroFecha {
         databaseReference.child("lluvia").addValueEventListener(lluviaListener);
     }
 
-    private File generarArchivoUnico(String fechaSeleccionada) {
-        File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-        String nombreBase = "reporte_meteorologico_" + fechaSeleccionada;
-        String nombreArchivo = nombreBase + ".pdf";
-        File archivo = new File(downloadsDir, nombreArchivo);
-
-        int contador = 1;
-        while (archivo.exists()) {
-            nombreArchivo = nombreBase + "_(" + contador + ").pdf";
-            archivo = new File(downloadsDir, nombreArchivo);
-            contador++;
+    public void cargarDatosVientoPorFecha(String fecha){
+        if (vientoListener != null) {
+            databaseReference.child("viento").removeEventListener(vientoListener);
         }
 
-        return archivo;
+        String fechaInicio = fecha + " 00:00:00";
+        String fechaFin = fecha + " 23:59:59";
+
+        vientoListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Viento datosFiltrados = null;
+
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        Viento datos = child.getValue(Viento.class);
+                        if (datos != null && datos.getTimestamp() != null) {
+                            if (estaEnRangoFecha(datos.getTimestamp(), fechaInicio, fechaFin)) {
+                                datosFiltrados = datos;
+                            }
+                        }
+                    }
+
+                    if (datosFiltrados != null) {
+                        datosVientoActuales = datosFiltrados;
+                        listener.onDatosViento(datosFiltrados);
+                    } else {
+                        Log.d(TAG, "No hay datos de viento para la fecha: " + fecha);
+                        datosVientoActuales = null;
+                        listener.onDatosVaciosViento();
+                    }
+                } else {
+                    Log.d(TAG, "No hay datos de viento disponibles");
+                    datosVientoActuales = null;
+                    listener.onDatosVaciosViento();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error al cargar datos de viento por fecha: " + error.getMessage());
+                Toast.makeText(context,
+                        "Error al cargar datos de viento", Toast.LENGTH_SHORT).show();
+                datosVientoActuales = null;
+                listener.onDatosVaciosViento();
+            }
+        };
+        databaseReference.child("viento").addValueEventListener(vientoListener);
     }
+
+    private void cargarDatosGasesPorFecha(String fecha){
+        if (gasesListener != null) {
+            databaseReference.child("mq2").removeEventListener(gasesListener);
+        }
+
+        String fechaInicio = fecha + " 00:00:00";
+        String fechaFin = fecha + " 23:59:59";
+
+        gasesListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Mq2 datosFiltrados = null;
+
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        Mq2 datos = child.getValue(Mq2.class);
+                        if (datos != null && datos.getTimestamp() != null) {
+                            if (estaEnRangoFecha(datos.getTimestamp(), fechaInicio, fechaFin)) {
+                                datosFiltrados = datos;
+                            }
+                        }
+                    }
+
+                    if (datosFiltrados != null) {
+                        datosGasesActuales = datosFiltrados;
+                        listener.onDatosGases(datosFiltrados);
+                    } else {
+                        Log.d(TAG, "No hay datos de gases para la fecha: " + fecha);
+                        datosGasesActuales = null;
+                        listener.onDatosVaciosGases();
+                    }
+                } else {
+                    Log.d(TAG, "No hay datos de gases disponibles");
+                    datosGasesActuales = null;
+                    listener.onDatosVaciosGases();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error al cargar datos de gases por fecha: " + error.getMessage());
+                Toast.makeText(context,
+                        "Error al cargar datos de gases", Toast.LENGTH_SHORT).show();
+                datosGasesActuales = null;
+                listener.onDatosVaciosGases();
+            }
+        };
+        databaseReference.child("mq2").addValueEventListener(gasesListener);
+    }
+
+    public void cargarDatosSueloPorFecha(String fecha){
+        if (sueloListener != null) {
+            databaseReference.child("suelo").removeEventListener(sueloListener);
+        }
+
+        String fechaInicio = fecha + " 00:00:00";
+        String fechaFin = fecha + " 23:59:59";
+
+        sueloListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Suelo datosFiltrados = null;
+
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        Suelo datos = child.getValue(Suelo.class);
+                        if (datos != null && datos.getTimestamp() != null) {
+                            if (estaEnRangoFecha(datos.getTimestamp(), fechaInicio, fechaFin)) {
+                                datosFiltrados = datos;
+                            }
+                        }
+                    }
+
+                    if (datosFiltrados != null) {
+                        datosSueloActuales = datosFiltrados;
+                        listener.onDatosSuelo(datosFiltrados);
+                    } else {
+                        Log.d(TAG, "No hay datos de suelo para la fecha: " + fecha);
+                        datosSueloActuales = null;
+                        listener.onDatosVaciosSuelo();
+                    }
+                } else {
+                    Log.d(TAG, "No hay datos de suelo disponibles");
+                    datosSueloActuales = null;
+                    listener.onDatosVaciosSuelo();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error al cargar datos de suelo por fecha: " + error.getMessage());
+                Toast.makeText(context,
+                        "Error al cargar datos de suelo", Toast.LENGTH_SHORT).show();
+                datosSueloActuales = null;
+                listener.onDatosVaciosSuelo();
+            }
+        };
+        databaseReference.child("suelo").addValueEventListener(sueloListener);
+    }
+
 
     private void generarPdfConDatos() {
         if (fechaSeleccionada == null) {
@@ -345,93 +507,153 @@ public class GestorFiltroFecha {
         }
 
         try {
-            // Crear documento PDF
+            int alturaCalculada = calcularAlturaContenido();
             PdfDocument pdfDocument = new PdfDocument();
-            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create();
+            int anchoTicket = 204;
+
+            PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(anchoTicket, alturaCalculada, 1).create();
             PdfDocument.Page page = pdfDocument.startPage(pageInfo);
 
             Canvas canvas = page.getCanvas();
-            Paint paint = new Paint();
 
-            // estilos
             Paint titlePaint = new Paint();
-            titlePaint.setTextSize(24);
+            titlePaint.setTextSize(14);
             titlePaint.setFakeBoldText(true);
+            titlePaint.setTextAlign(Paint.Align.CENTER);
 
             Paint headerPaint = new Paint();
-            headerPaint.setTextSize(18);
+            headerPaint.setTextSize(11);
             headerPaint.setFakeBoldText(true);
 
             Paint textPaint = new Paint();
-            textPaint.setTextSize(14);
+            textPaint.setTextSize(9);
 
-            int yPosition = 80;
+            Paint separatorPaint = new Paint();
+            separatorPaint.setStrokeWidth(1);
+
+            int yPosition = 20;
+            int margen = 10;
+            int lineHeight = 15;
 
             // Título
             String fechaMostrar = formatoFechaMostrar.format(formatoFechaFirebase.parse(fechaSeleccionada + " 00:00:00"));
-            canvas.drawText("Reporte Meteorológico", 50, yPosition, titlePaint);
-            yPosition += 40;
-            canvas.drawText("Fecha: " + fechaMostrar, 50, yPosition, headerPaint);
-            yPosition += 60;
+            canvas.drawText("REPORTE METEOROLOGICO", anchoTicket / 2f, yPosition, titlePaint);
+            yPosition += 20;
+
+            canvas.drawLine(margen, yPosition, anchoTicket - margen, yPosition, separatorPaint);
+            yPosition += 15;
+
+            canvas.drawText("Fecha: " + fechaMostrar, margen, yPosition, headerPaint);
+            yPosition += 20;
+
+            canvas.drawLine(margen, yPosition, anchoTicket - margen, yPosition, separatorPaint);
+            yPosition += 15;
 
             // Datos Meteorológicos
-            canvas.drawText("DATOS METEOROLÓGICOS", 50, yPosition, headerPaint);
-            yPosition += 30;
+            canvas.drawText("DATOS METEOROLOGICOS", margen, yPosition, headerPaint);
+            yPosition += lineHeight;
+            canvas.drawLine(margen, yPosition, anchoTicket - margen, yPosition, separatorPaint);
+            yPosition += 10;
 
             if (datosMeteorologicosActuales != null) {
-                canvas.drawText("• Temperatura: " + datosMeteorologicosActuales.getTemperatura() + "°C", 70, yPosition, textPaint);
-                yPosition += 25;
-                canvas.drawText("• Humedad: " + datosMeteorologicosActuales.getHumedad() + "%", 70, yPosition, textPaint);
-                yPosition += 25;
-                canvas.drawText("• Timestamp: " + datosMeteorologicosActuales.getTimestampFormateado(), 70, yPosition, textPaint);
-                yPosition += 25;
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Temperatura: " + datosMeteorologicosActuales.getTemperatura() + "°C", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Humedad: " + datosMeteorologicosActuales.getHumedad() + "%", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Hora: " + datosMeteorologicosActuales.getTimestampFormateado(), margen, yPosition, anchoTicket - (margen * 2), lineHeight);
             } else {
-                canvas.drawText("• No hay datos disponibles para esta fecha", 70, yPosition, textPaint);
-                yPosition += 25;
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Sin datos disponibles", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
             }
-
-            yPosition += 30;
+            yPosition += 10;
 
             // Datos Barométricos
-            canvas.drawText("DATOS BAROMÉTRICOS", 50, yPosition, headerPaint);
-            yPosition += 30;
+            canvas.drawText("DATOS BAROMETRICOS", margen, yPosition, headerPaint);
+            yPosition += lineHeight;
+            canvas.drawLine(margen, yPosition, anchoTicket - margen, yPosition, separatorPaint);
+            yPosition += 10;
 
             if (datosBarometricosActuales != null) {
-                canvas.drawText("• Presión: " + datosBarometricosActuales.getPresion() + " hPa", 70, yPosition, textPaint);
-                yPosition += 25;
-                canvas.drawText("• Altitud: " + datosBarometricosActuales.getAltitud() + " m", 70, yPosition, textPaint);
-                yPosition += 25;
-                canvas.drawText("• Presion Mar: " + datosBarometricosActuales.getPresion_nivel_mar() + " hPa", 70, yPosition, textPaint);
-                yPosition += 25;
-                canvas.drawText("• Timestamp: " + datosBarometricosActuales.getTimestampFormateado(), 70, yPosition, textPaint);
-                yPosition += 25;
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Presion: " + datosBarometricosActuales.getPresion() + " hPa", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Altitud: " + datosBarometricosActuales.getAltitud() + " m", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Presion Mar: " + datosBarometricosActuales.getPresion_nivel_mar() + " hPa", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Hora: " + datosBarometricosActuales.getTimestampFormateado(), margen, yPosition, anchoTicket - (margen * 2), lineHeight);
             } else {
-                canvas.drawText("• No hay datos disponibles para esta fecha", 70, yPosition, textPaint);
-                yPosition += 25;
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Sin datos disponibles", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
             }
-
-            yPosition += 30;
+            yPosition += 10;
 
             // Datos de Lluvia
-            canvas.drawText("DATOS DE PRECIPITACIÓN", 50, yPosition, headerPaint);
-            yPosition += 30;
+            canvas.drawText("DATOS DE PRECIPITACION", margen, yPosition, headerPaint);
+            yPosition += lineHeight;
+            canvas.drawLine(margen, yPosition, anchoTicket - margen, yPosition, separatorPaint);
+            yPosition += 10;
 
             if (datosLluviaActuales != null) {
-                canvas.drawText("• Estado: " + datosLluviaActuales.getEstadoFormateado(), 70, yPosition, textPaint);
-                yPosition += 25;
-                canvas.drawText("• Timestamp: " + datosLluviaActuales.getTimestampFormateado(), 70, yPosition, textPaint);
-                yPosition += 25;
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Estado: " + datosLluviaActuales.getEstadoFormateado(), margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Hora: " + datosLluviaActuales.getTimestampFormateado(), margen, yPosition, anchoTicket - (margen * 2), lineHeight);
             } else {
-                canvas.drawText("• No hay datos disponibles para esta fecha", 70, yPosition, textPaint);
-                yPosition += 25;
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Sin datos disponibles", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
             }
+            yPosition += 10;
 
-            yPosition += 50;
-            canvas.drawText("Reporte generado el: " + new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date()), 50, yPosition, textPaint);
+            // Datos Viento
+            canvas.drawText("DATOS DE VIENTO", margen, yPosition, headerPaint);
+            yPosition += lineHeight;
+            canvas.drawLine(margen, yPosition, anchoTicket - margen, yPosition, separatorPaint);
+            yPosition += 10;
+
+            if (datosVientoActuales != null) {
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Velocidad: " + datosVientoActuales.getVelocidad(), margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Hora: " + datosVientoActuales.getTimestampFormateado(), margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+            } else {
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Sin datos disponibles", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+            }
+            yPosition += 10;
+
+            // Datos Gases
+            canvas.drawText("DATOS DE GASES", margen, yPosition, headerPaint);
+            yPosition += lineHeight;
+            canvas.drawLine(margen, yPosition, anchoTicket - margen, yPosition, separatorPaint);
+            yPosition += 10;
+
+            if (datosGasesActuales != null) {
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Estado: " + datosGasesActuales.getEstado(), margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Porcentaje: " + datosGasesActuales.getPorcentaje() + "%", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Hora: " + datosGasesActuales.getTimestampFormateado(), margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+            } else {
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Sin datos disponibles", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+            }
+            yPosition += 10;
+
+            // Datos Suelo
+            canvas.drawText("DATOS DE SUELO", margen, yPosition, headerPaint);
+            yPosition += lineHeight;
+            canvas.drawLine(margen, yPosition, anchoTicket - margen, yPosition, separatorPaint);
+            yPosition += 10;
+
+            if (datosSueloActuales != null) {
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Estado: " + datosSueloActuales.getEstado(), margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Humedad Suelo: " + datosSueloActuales.getPorcentaje() + "%", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Hora: " + datosSueloActuales.getTimestampFormateado(), margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+            } else {
+                yPosition = dibujarTextoConSalto(canvas, textPaint, "Sin datos disponibles", margen, yPosition, anchoTicket - (margen * 2), lineHeight);
+            }
+            yPosition += 15;
+
+            // Línea final
+            canvas.drawLine(margen, yPosition, anchoTicket - margen, yPosition, separatorPaint);
+            yPosition += 15;
+
+            // Footer
+            Paint footerPaint = new Paint();
+            footerPaint.setTextSize(8);
+            footerPaint.setTextAlign(Paint.Align.CENTER);
+
+            String fechaGeneracion = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(new Date());
+            canvas.drawText("Generado: " + fechaGeneracion, anchoTicket / 2f, yPosition, footerPaint);
 
             pdfDocument.finishPage(page);
 
-            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS", Locale.getDefault()).format(new Date());
+            // Guardar
+            String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
             String nombreArchivo = "reporte_meteorologico_" + fechaSeleccionada + "_" + timestamp + ".pdf";
 
             File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
@@ -443,12 +665,65 @@ public class GestorFiltroFecha {
             fos.close();
 
             listener.onPdfGenerado(archivo.getAbsolutePath());
-            Toast.makeText(context, "PDF generado en Descargas: " + nombreArchivo, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "PDF generado: " + nombreArchivo, Toast.LENGTH_LONG).show();
 
         } catch (IOException | ParseException e) {
             Log.e(TAG, "Error al generar PDF: " + e.getMessage());
             listener.onErrorGenerandoPdf("Error al generar PDF: " + e.getMessage());
             Toast.makeText(context, "Error al generar PDF", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private int calcularAlturaContenido() {
+        int alturaBase = 100;
+        int alturaSeccion = 60;
+        int numSecciones = 5;
+
+
+        int alturaAdicional = 0;
+        if (datosMeteorologicosActuales != null) alturaAdicional += 45;
+        if (datosBarometricosActuales != null) alturaAdicional += 60;
+        if (datosLluviaActuales != null) alturaAdicional += 30;
+        if (datosVientoActuales != null) alturaAdicional += 30;
+        if (datosGasesActuales != null) alturaAdicional += 45;
+        if (datosSueloActuales != null) alturaAdicional += 45;
+
+        return alturaBase + (numSecciones * alturaSeccion) + alturaAdicional;
+    }
+
+    private int dibujarTextoConSalto(Canvas canvas, Paint paint, String texto, int x, int y, int anchoMaximo, int alturaLinea) {
+
+        float anchoTexto = paint.measureText(texto);
+
+        if (anchoTexto <= anchoMaximo) {
+            canvas.drawText(texto, x, y, paint);
+            return y + alturaLinea;
+        } else {
+            String[] palabras = texto.split(" ");
+            StringBuilder lineaActual = new StringBuilder();
+            int yActual = y;
+
+            for (String palabra : palabras) {
+                String lineaTest = lineaActual.length() > 0 ? lineaActual + " " + palabra : palabra;
+                float anchoTest = paint.measureText(lineaTest);
+
+                if (anchoTest <= anchoMaximo) {
+                    lineaActual.append(lineaActual.length() > 0 ? " " + palabra : palabra);
+                } else {
+                    if (lineaActual.length() > 0) {
+                        canvas.drawText(lineaActual.toString(), x, yActual, paint);
+                        yActual += alturaLinea;
+                    }
+                    lineaActual = new StringBuilder(palabra);
+                }
+            }
+
+            if (lineaActual.length() > 0) {
+                canvas.drawText(lineaActual.toString(), x, yActual, paint);
+                yActual += alturaLinea;
+            }
+
+            return yActual;
         }
     }
 

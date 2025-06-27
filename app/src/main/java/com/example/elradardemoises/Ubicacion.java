@@ -85,7 +85,7 @@ public class Ubicacion {
                         if (location != null) {
                             getAddressFromLocation(location.getLatitude(), location.getLongitude());
                         } else {
-                            String errorText = "📍 Ubicación no disponible";
+                            String errorText = "Ubicación no disponible";
                             lblUbicacion.setText(errorText);
                             if (callback != null) {
                                 callback.onLocationError(errorText);
@@ -95,7 +95,7 @@ public class Ubicacion {
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error al obtener ubicación: " + e.getMessage());
-                    String errorText = "📍 Error al obtener ubicación";
+                    String errorText = "Error al obtener ubicación";
                     lblUbicacion.setText(errorText);
                     if (callback != null) {
                         callback.onLocationError(errorText);
@@ -108,7 +108,7 @@ public class Ubicacion {
 
         if (!Geocoder.isPresent()) {
             fragment.requireActivity().runOnUiThread(() -> {
-                String errorText = "📍 Servicio de geocodificación no disponible";
+                String errorText = "Servicio de geocodificación no disponible";
                 lblUbicacion.setText(errorText);
                 if (callback != null) {
                     callback.onLocationError(errorText);
@@ -135,7 +135,7 @@ public class Ubicacion {
                         Log.d(TAG, "Ubicación obtenida: " + locationText);
                     } else {
                         fragment.requireActivity().runOnUiThread(() -> {
-                            String errorText = "📍 Ubicación no disponible";
+                            String errorText = "Ubicación no disponible";
                             lblUbicacion.setText(errorText);
                             if (callback != null) {
                                 callback.onLocationError(errorText);
@@ -148,7 +148,7 @@ public class Ubicacion {
                 public void onError(@Nullable String errorMessage) {
                     Log.e(TAG, "Error al obtener dirección: " + errorMessage);
                     fragment.requireActivity().runOnUiThread(() -> {
-                        String errorText = "📍 Error al obtener dirección";
+                        String errorText = "Error al obtener dirección";
                         lblUbicacion.setText(errorText);
                         if (callback != null) {
                             callback.onLocationError(errorText);
@@ -175,7 +175,7 @@ public class Ubicacion {
                         Log.d(TAG, "Ubicación obtenida: " + locationText);
                     } else {
                         fragment.requireActivity().runOnUiThread(() -> {
-                            String errorText = "📍 Ubicación no disponible";
+                            String errorText = "Ubicación no disponible";
                             lblUbicacion.setText(errorText);
                             if (callback != null) {
                                 callback.onLocationError(errorText);
@@ -186,7 +186,7 @@ public class Ubicacion {
                 } catch (IOException e) {
                     Log.e(TAG, "Error al obtener dirección: " + e.getMessage());
                     fragment.requireActivity().runOnUiThread(() -> {
-                        String errorText = "📍 Error al obtener dirección";
+                        String errorText = "Error al obtener dirección";
                         lblUbicacion.setText(errorText);
                         if (callback != null) {
                             callback.onLocationError(errorText);
@@ -203,7 +203,7 @@ public class Ubicacion {
         String adminArea = address.getAdminArea();
         String subAdminArea = address.getSubAdminArea();
 
-        String locationText = "📍 ";
+        String locationText = "";
         if (cityName != null && !cityName.isEmpty()) {
             locationText += cityName;
         } else if (subAdminArea != null && !subAdminArea.isEmpty()) {
@@ -225,7 +225,7 @@ public class Ubicacion {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getCurrentLocation();
             } else {
-                String errorText = "📍 Permisos de ubicación denegados";
+                String errorText = "Permisos de ubicación denegados";
                 lblUbicacion.setText(errorText);
                 Toast.makeText(context,
                         "Se necesitan permisos de ubicación para mostrar tu ubicación",
