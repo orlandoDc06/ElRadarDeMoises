@@ -35,7 +35,7 @@ public class LLuvia {
         this.timestamp = timestamp;
     }
 
-    // Método para obtener el timestamp formateado
+
     public String getTimestampFormateado() {
         if (timestamp == null || timestamp.isEmpty()) {
             return "Sin fecha";
@@ -54,7 +54,7 @@ public class LLuvia {
         }
     }
 
-    // Método para obtener una descripción más amigable del estado
+
     public String getEstadoFormateado() {
         if (estado == null || estado.isEmpty()) {
             return "Sin datos";
