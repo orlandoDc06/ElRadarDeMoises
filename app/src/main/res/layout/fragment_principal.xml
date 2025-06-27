@@ -104,8 +104,10 @@
                 android:id="@+id/lblUbicacion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="📍 Ubicacion"
-                android:textSize="16sp"
+                android:textSize="30sp"
+                android:textStyle="bold"
                 android:textColor="#E0FFFFFF"
                 android:layout_marginBottom="8dp"
                 android:shadowColor="#40000000"
@@ -115,21 +117,6 @@
 
 
             <!-- Filtro por fecha -->
-            <TextView
-                android:id="@+id/tvWelcome"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:shadowColor="#40000000"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="4"
-                android:text="El Radar de Moises"
-                android:textAlignment="center"
-                android:textColor="@color/white"
-                android:textSize="28sp"
-                android:textStyle="bold" />
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -204,60 +191,6 @@
             app:cardBackgroundColor="@color/transparent"
             android:background="@drawable/glass_card_background">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="32dp"
-                android:gravity="center"
-                android:background="@drawable/glass_card_background">
-
-                <!-- Temperatura grande -->
-                <TextView
-                    android:id="@+id/tvTemperatura"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="--"
-                    android:textSize="72sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="8dp"
-                    android:fontFamily="sans-serif-light"
-                    android:shadowColor="#40000000"
-                    android:shadowDx="0"
-                    android:shadowDy="3"
-                    android:shadowRadius="6" />
-
-
-                <!-- Timestamp -->
-                <TextView
-                    android:id="@+id/tvTimestamp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Actualizado hace 5 min"
-                    android:textSize="14sp"
-                    android:textColor="#B0FFFFFF" />
-
-                <!-- Botón de actualizar elegante -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnRefreshWeather"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:layout_marginTop="16dp"
-                    android:text="Actualizar"
-                    android:textSize="14sp"
-                    android:textColor="@color/white"
-                    android:backgroundTint="#30FFFFFF"
-                    android:paddingHorizontal="20dp"
-                    app:cornerRadius="18dp"
-                    app:strokeColor="#40FFFFFF"
-                    app:strokeWidth="1dp"
-                    app:icon="@android:drawable/ic_popup_sync"
-                    app:iconTint="@color/white"
-                    app:iconSize="16dp" />
-
-            </LinearLayout>
-
         </androidx.cardview.widget.CardView>
 
 
@@ -324,6 +257,61 @@
                 </androidx.cardview.widget.CardView>
 
                 <!-- Presión -->
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/glass_card_background"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="32dp">
+
+                    <!-- Temperatura grande -->
+                    <TextView
+                        android:id="@+id/tvTemperatura"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:fontFamily="sans-serif-light"
+                        android:shadowColor="#40000000"
+                        android:shadowDx="0"
+                        android:shadowDy="3"
+                        android:shadowRadius="6"
+                        android:text="--"
+                        android:textColor="@color/white"
+                        android:textSize="72sp"
+                        android:textStyle="bold" />
+
+
+                    <!-- Timestamp -->
+                    <TextView
+                        android:id="@+id/tvTimestamp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Actualizado hace 5 min"
+                        android:textColor="#B0FFFFFF"
+                        android:textSize="14sp" />
+
+                    <!-- Botón de actualizar elegante -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRefreshWeather"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:layout_marginTop="16dp"
+                        android:backgroundTint="#30FFFFFF"
+                        android:paddingHorizontal="20dp"
+                        android:text="Actualizar"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        app:cornerRadius="18dp"
+                        app:icon="@android:drawable/ic_popup_sync"
+                        app:iconSize="16dp"
+                        app:iconTint="@color/white"
+                        app:strokeColor="#40FFFFFF"
+                        app:strokeWidth="1dp" />
+
+                </LinearLayout>
+
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
                     android:layout_height="140dp"
@@ -489,7 +477,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:weightSum="2"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="0dp">
 
                 <!-- Lluvia -->
                 <androidx.cardview.widget.CardView
@@ -536,6 +524,285 @@
                             android:layout_height="wrap_content"
                             android:text="estado"
                             android:textSize="25sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="16dp"
+                    android:layout_marginTop="15dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="VIENTO"
+                            android:layout_gravity="center"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:id="@+id/tvEmojiViento"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="🍃"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tvViento"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-- km/h"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginTop="2dp">
+
+                <!-- Gas -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="16dp"
+                    android:layout_marginTop="15dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="GASES"
+                            android:layout_gravity="center"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:id="@+id/tvEmojiGases"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="❓"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tvGases"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="estado"
+                            android:textSize="25sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="16dp"
+                    android:layout_marginTop="15dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="PORCENTAJE"
+                            android:layout_gravity="center"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:id="@+id/tvEmojiPorcentaje"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="💨"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tvPorcentaje"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-- %"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginTop="2dp">
+
+                <!-- Suelo -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="16dp"
+                    android:layout_marginTop="15dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SUELO"
+                            android:layout_gravity="center"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:id="@+id/tvEmojiSuelo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="❓"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tvSuelo"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="estado"
+                            android:textSize="25sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="16dp"
+                    android:layout_marginTop="15dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="HUMEDAD SUELO"
+                            android:layout_gravity="center"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:id="@+id/tvEmojiPorcentajeSuelo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="🌱"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tvPorcentajeSuelo"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-- %"
+                            android:textSize="20sp"
                             android:textStyle="bold"
                             android:textColor="@color/white"
                             android:fontFamily="sans-serif-light" />

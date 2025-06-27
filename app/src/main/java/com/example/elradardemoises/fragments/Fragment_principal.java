@@ -36,7 +36,10 @@ import com.example.elradardemoises.Ubicacion;
 import com.example.elradardemoises.models.Bmp180;
 import com.example.elradardemoises.models.Dht11;
 import com.example.elradardemoises.models.LLuvia;
+import com.example.elradardemoises.models.Mq2;
+import com.example.elradardemoises.models.Suelo;
 import com.example.elradardemoises.models.Usuario;
+import com.example.elradardemoises.models.Viento;
 import com.example.elradardemoises.utils.UserManager;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -86,17 +89,25 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     // LLUVIA
     private TextView tvLluvia;
 
-    private MaterialButton btnRefreshWeather;
+    // Viento
+    private TextView tvViento;
 
-    // Nuevos elementos para filtro de fecha
-    private MaterialButton btnFiltrarFecha, btnLimpiarFiltro;
-    private TextView tvFechaSeleccionada;
+    // Gases
+    private TextView tvGases, tvPorcentaje;
+
+    //Suelo
+    private TextView tvSuelo, tvPorcentajeSuelo;
+
+    private MaterialButton btnRefreshWeather;
 
     private DatabaseReference databaseReference;
     private Usuario usuarioActual;
     private Dht11 datosMeteorologicos;
     private Bmp180 datosBarometricos;
     private LLuvia datosLluvia;
+    private Viento datosViento;
+    private Mq2 datosGases;
+    private Suelo datosSuelo;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private FusedLocationProviderClient fusedLocationClient;
@@ -105,6 +116,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     private ValueEventListener weatherListener;
     private ValueEventListener bmpListener;
     private ValueEventListener lluviaListener;
+    private ValueEventListener vientoListener;
+    private ValueEventListener gasesListener;
+    private ValueEventListener sueloListener;
 
     private GestorFiltroFecha gestorFiltroFecha;
     private Ubicacion ubicacion;
@@ -139,6 +153,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         cargarDatosMeteorologicos();
         cargarDatosBarometricos();
         cargarDatosLluvia();
+        cargarDatosViento();
+        cargarDatosGases();
+        cargarDatosSuelo();
         initializeLocation();
         solicitarPermisos();
 
@@ -153,19 +170,30 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
         btnLogout = view.findViewById(R.id.btnLogout);
 
-        // DHT11 Views
+        // DHT11
         tvTemperatura = view.findViewById(R.id.tvTemperatura);
         tvHumedad = view.findViewById(R.id.tvHumedad);
         tvTimestamp = view.findViewById(R.id.tvTimestamp);
 
-        // BMP180 Views
+        // BMP180
         tvAltitud = view.findViewById(R.id.tvAltitud);
         tvPresion = view.findViewById(R.id.tvPresion);
         tvPresionNivelMar = view.findViewById(R.id.tvPresionNivelMar);
         tvTimestampBmp = view.findViewById(R.id.tvTimestampBmp);
 
-        // LLUVIA View
+        // LLUVIA
         tvLluvia = view.findViewById(R.id.tvLluvia);
+
+        //Viento
+        tvViento = view.findViewById(R.id.tvViento);
+
+        // Gases
+        tvGases = view.findViewById(R.id.tvGases);
+        tvPorcentaje = view.findViewById(R.id.tvPorcentaje);
+
+        //Suelo
+        tvSuelo = view.findViewById(R.id.tvSuelo);
+        tvPorcentajeSuelo = view.findViewById(R.id.tvPorcentajeSuelo);
 
         lblUbicacion = view.findViewById(R.id.lblUbicacion);
 
@@ -188,6 +216,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
                 cargarDatosMeteorologicos();
                 cargarDatosBarometricos();
                 cargarDatosLluvia();
+                cargarDatosViento();
+                cargarDatosGases();
+                cargarDatosSuelo();
             }
             Toast.makeText(requireContext(), "Actualizando datos...", Toast.LENGTH_SHORT).show();
         });
@@ -204,6 +235,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         cargarDatosMeteorologicos();
         cargarDatosBarometricos();
         cargarDatosLluvia();
+        cargarDatosViento();
+        cargarDatosGases();
+        cargarDatosSuelo();
     }
 
     public void onDatosMeteorologicos(Dht11 datos) {
@@ -224,6 +258,11 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         mostrarDatosLluvia(datos);
     }
 
+    @Override
+    public void onDatosViento(Viento datos) {
+        datosViento = datos;
+        mostrarDatosViento(datos);
+    }
 
     @Override
     public void onDatosVaciosMeteorologicos() {
@@ -238,6 +277,33 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     @Override
     public void onDatosVaciosLluvia() {
         mostrarDatosVaciosLluvia();
+    }
+
+    @Override
+    public void onDatosVaciosViento() {
+        mostrarDatosVaciosViento();
+    }
+
+    @Override
+    public void onDatosGases(Mq2 datos) {
+        datosGases = datos;
+        mostrarDatosGases(datos);
+    }
+
+    @Override
+    public void onDatosVaciosGases() {
+        mostrarDatosVaciosGases();
+    }
+
+    @Override
+    public void onDatosSuelo(Suelo datos) {
+        datosSuelo = datos;
+        mostrarDatosSuelo(datos);
+    }
+
+    @Override
+    public void onDatosVaciosSuelo() {
+        mostrarDatosVaciosSuelo();
     }
 
     @Override
@@ -349,6 +415,181 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
                         Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    private void cargarDatosViento(){
+        if (vientoListener != null){
+            databaseReference.child("viento").removeEventListener(vientoListener);
+        }
+
+        vientoListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()){
+                    Viento ultimosDatos = null;
+
+                    if (snapshot.hasChild("actual")){
+                        ultimosDatos = snapshot.child("actual").getValue(Viento.class);
+                    }
+                    else{
+                        for (DataSnapshot child : snapshot.getChildren()){
+                            ultimosDatos = child.getValue(Viento.class);
+                        }
+                    }
+                    if (ultimosDatos != null) {
+                        datosViento = ultimosDatos;
+                        mostrarDatosViento(ultimosDatos);
+                    }
+                }
+                else {
+                    mostrarDatosVaciosViento();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(requireContext(),
+                        "Error al cargar datos de viento", Toast.LENGTH_SHORT).show();
+                mostrarDatosVaciosViento();
+            }
+        };
+        databaseReference.child("viento").addValueEventListener(vientoListener);
+    }
+
+    private void mostrarDatosViento(Viento datos) {
+        if (datos != null && String.valueOf(datos.getVelocidad()) != null) {
+
+            tvViento.setText(datos.getVelocidad() + " Km/h");
+        } else {
+            mostrarDatosVaciosLluvia();
+        }
+    }
+
+    private void mostrarDatosVaciosViento() {
+        tvViento.setText("Sin datos");
+
+    }
+
+    public void cargarDatosSuelo(){
+        if(sueloListener != null){
+            databaseReference.child("suelo").removeEventListener(gasesListener);
+        }
+
+        sueloListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Suelo ultimosDatos = null;
+
+                    if (snapshot.hasChild("actual")) {
+                        ultimosDatos = snapshot.child("actual").getValue(Suelo.class);
+                    } else {
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            ultimosDatos = child.getValue(Suelo.class);
+                        }
+                    }
+                    if (ultimosDatos != null) {
+                        datosSuelo = ultimosDatos;
+                        mostrarDatosSuelo(ultimosDatos);
+                    }
+                } else {
+                    Log.d(TAG, "No hay datos de suelo disponibles");
+                    mostrarDatosVaciosSuelo();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(requireContext(),
+                        "Error al cargar datos de suelo", Toast.LENGTH_SHORT).show();
+                mostrarDatosVaciosSuelo();
+            }
+        };
+        databaseReference.child("suelo").addValueEventListener(sueloListener);
+    }
+
+    public void mostrarDatosSuelo(Suelo datos){
+        if (datos != null && datos.getEstado() != null) {
+            TextView tvEmoji = getView().findViewById(R.id.tvEmojiSuelo);
+            if (tvEmoji != null) {
+                tvEmoji.setText(datos.getEmojiEstado());
+            }
+
+            tvSuelo.setText(datos.getEstadoFormateado());
+            tvPorcentajeSuelo.setText(datos.getPorcentaje() + " %");
+        } else {
+            mostrarDatosVaciosSuelo();
+        }
+    }
+
+    public void mostrarDatosVaciosSuelo(){
+        tvSuelo.setText("Sin datos");
+        TextView tvEmoji = getView().findViewById(R.id.tvEmojiSuelo);
+        if (tvEmoji != null) {
+            tvEmoji.setText("❓");
+        }
+        tvPorcentajeSuelo.setText("--%");
+    }
+
+    private void cargarDatosGases(){
+        if(gasesListener != null){
+            databaseReference.child("mq2").removeEventListener(gasesListener);
+        }
+
+        gasesListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Mq2 ultimosDatos = null;
+
+                    if (snapshot.hasChild("actual")) {
+                        ultimosDatos = snapshot.child("actual").getValue(Mq2.class);
+                    } else {
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            ultimosDatos = child.getValue(Mq2.class);
+                        }
+                    }
+                    if (ultimosDatos != null) {
+                        datosGases = ultimosDatos;
+                        mostrarDatosGases(ultimosDatos);
+                    }
+                } else {
+                    Log.d(TAG, "No hay datos de gases disponibles");
+                    mostrarDatosVaciosGases();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(requireContext(),
+                        "Error al cargar datos de gases", Toast.LENGTH_SHORT).show();
+                mostrarDatosVaciosGases();
+            }
+        };
+        databaseReference.child("mq2").addValueEventListener(gasesListener);
+    }
+
+    public void mostrarDatosGases(Mq2 datos){
+        if (datos != null && datos.getEstado() != null) {
+            TextView tvEmoji = getView().findViewById(R.id.tvEmojiGases);
+            if (tvEmoji != null) {
+                tvEmoji.setText(datos.getEmojiEstado());
+            }
+
+            tvGases.setText(datos.getEstadoFormateado());
+            tvPorcentaje.setText(datos.getPorcentaje() + " %");
+        } else {
+            mostrarDatosVaciosGases();
+        }
+    }
+
+    public void mostrarDatosVaciosGases(){
+        tvGases.setText("Sin datos");
+        TextView tvEmoji = getView().findViewById(R.id.tvEmojiGases);
+        if (tvEmoji != null) {
+            tvEmoji.setText("❓");
+        }
+        tvPorcentaje.setText("--%");
     }
 
     private void cargarDatosLluvia() {
