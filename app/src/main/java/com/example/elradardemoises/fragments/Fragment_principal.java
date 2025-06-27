@@ -5,10 +5,13 @@ import static android.content.Intent.getIntent;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -45,6 +48,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -104,6 +108,7 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
 
     private GestorFiltroFecha gestorFiltroFecha;
     private Ubicacion ubicacion;
+    private static final int PERMISSION_REQUEST_CODE = 1001;
 
     public Fragment_principal() {
 
@@ -135,6 +140,7 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         cargarDatosBarometricos();
         cargarDatosLluvia();
         initializeLocation();
+        solicitarPermisos();
 
         gestorFiltroFecha.inicializarVistas(view);
         gestorFiltroFecha.configurarClickListeners();
@@ -278,7 +284,6 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
 
     @Override
     public void onPermissionDenied() {
-        // Manejar cuando el usuario niega los permisos
         Log.w("Fragment", "Permisos de ubicación denegados");
     }
 
@@ -288,13 +293,62 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         }
     }
 
+
+
+    @Override
+    public void onPdfGenerado(String rutaArchivo) {
+        Log.d("Fragment", "PDF generado en: " + rutaArchivo);
+
+    }
+
+    @Override
+    public void onErrorGenerandoPdf(String error) {
+        Log.e("Fragment", "Error generando PDF: " + error);
+        Toast.makeText(getContext(), "Error al generar PDF: " + error, Toast.LENGTH_LONG).show();
+    }
+
+
+    private void abrirPdf(String rutaArchivo) {
+        try {
+            File archivo = new File(rutaArchivo);
+            if (archivo.exists()) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                Uri uri = FileProvider.getUriForFile(getContext(),
+                        getContext().getPackageName() + ".fileprovider", archivo);
+                intent.setDataAndType(uri, "application/pdf");
+                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(intent);
+            }
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "No se puede abrir el PDF", Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void solicitarPermisos() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                requestPermissions(new String[]{
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                }, PERMISSION_REQUEST_CODE);
+            }
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-
-        ubicacion.handlePermissionResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getContext(), "Permisos concedidos", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getContext(), "Permisos necesarios para generar PDF",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     private void cargarDatosLluvia() {
@@ -513,7 +567,6 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         tvTimestampBmp.setText("Sin datos disponibles");
     }
 
-    // El resto del código permanece igual...
     private void cargarDatosUsuario() {
         Intent intent = requireActivity().getIntent();
         String userEmail = intent.getStringExtra("user_email");
