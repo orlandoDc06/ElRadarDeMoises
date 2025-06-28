@@ -67,10 +67,8 @@ public class Suelo {
         switch (estadoLower) {
             case "seco":
                 return "🏜️";
-            case "aguacero":
+            case "humedo":
                 return "💧";
-            case "lluvia":
-                return "🌧️";
             default:
                 return "❓";
         }
