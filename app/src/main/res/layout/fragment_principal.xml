@@ -811,6 +811,121 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="0dp">
+
+                <!-- Lluvia -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="16dp"
+                    android:layout_marginTop="15dp"
+
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="LUZ"
+                            android:layout_gravity="center"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:id="@+id/tvEmojiLuz"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="💧"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tvLuz"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="estado"
+                            android:textSize="25sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="0dp"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="16dp"
+                    android:layout_marginTop="15dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/transparent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:background="@drawable/glass_card_small_background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ILUMINANCIA"
+                            android:layout_gravity="center"
+                            android:textSize="12sp"
+                            android:textColor="#B0FFFFFF"
+                            android:layout_marginBottom="8dp"
+                            android:letterSpacing="0.1" />
+
+                        <TextView
+                            android:id="@+id/tvEmojiIluminancia"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="🍃"
+                            android:textSize="20sp"
+                            android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/tvIluminancia"
+                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="--"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:fontFamily="sans-serif-light" />
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+            </LinearLayout>
+
         </LinearLayout>
 
         <!-- Timestamp general -->

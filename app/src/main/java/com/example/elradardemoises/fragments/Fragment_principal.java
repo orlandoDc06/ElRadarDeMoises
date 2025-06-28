@@ -36,6 +36,7 @@ import com.example.elradardemoises.Ubicacion;
 import com.example.elradardemoises.models.Bmp180;
 import com.example.elradardemoises.models.Dht11;
 import com.example.elradardemoises.models.LLuvia;
+import com.example.elradardemoises.models.Luz;
 import com.example.elradardemoises.models.Mq2;
 import com.example.elradardemoises.models.Suelo;
 import com.example.elradardemoises.models.Usuario;
@@ -98,6 +99,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     //Suelo
     private TextView tvSuelo, tvPorcentajeSuelo;
 
+    //Luz
+    private TextView tvLuz, tvIluminancia;
+
     private MaterialButton btnRefreshWeather;
 
     private DatabaseReference databaseReference;
@@ -108,6 +112,7 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     private Viento datosViento;
     private Mq2 datosGases;
     private Suelo datosSuelo;
+    private Luz datosLuz;
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private FusedLocationProviderClient fusedLocationClient;
@@ -119,6 +124,7 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     private ValueEventListener vientoListener;
     private ValueEventListener gasesListener;
     private ValueEventListener sueloListener;
+    private ValueEventListener luzListener;
 
     private GestorFiltroFecha gestorFiltroFecha;
     private Ubicacion ubicacion;
@@ -156,6 +162,7 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         cargarDatosViento();
         cargarDatosGases();
         cargarDatosSuelo();
+        cargarDatosLuz();
         initializeLocation();
         solicitarPermisos();
 
@@ -195,6 +202,10 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         tvSuelo = view.findViewById(R.id.tvSuelo);
         tvPorcentajeSuelo = view.findViewById(R.id.tvPorcentajeSuelo);
 
+        //Luz
+        tvLuz = view.findViewById(R.id.tvLuz);
+        tvIluminancia = view.findViewById(R.id.tvIluminancia);
+
         lblUbicacion = view.findViewById(R.id.lblUbicacion);
 
         btnRefreshWeather = view.findViewById(R.id.btnRefreshWeather);
@@ -219,6 +230,7 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
                 cargarDatosViento();
                 cargarDatosGases();
                 cargarDatosSuelo();
+                cargarDatosLuz();
             }
             Toast.makeText(requireContext(), "Actualizando datos...", Toast.LENGTH_SHORT).show();
         });
@@ -238,6 +250,7 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         cargarDatosViento();
         cargarDatosGases();
         cargarDatosSuelo();
+        cargarDatosLuz();
     }
 
     public void onDatosMeteorologicos(Dht11 datos) {
@@ -304,6 +317,17 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     @Override
     public void onDatosVaciosSuelo() {
         mostrarDatosVaciosSuelo();
+    }
+
+    @Override
+    public void onDatosLuz(Luz datos) {
+        datosLuz = datos;
+        mostrarDatosLuz(datos);
+    }
+
+    @Override
+    public void onDatosVaciosLuz() {
+        mostrarDatosVaciosLuz();
     }
 
     @Override
@@ -590,6 +614,69 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
             tvEmoji.setText("❓");
         }
         tvPorcentaje.setText("--%");
+    }
+
+    private void cargarDatosLuz(){
+        if (luzListener != null) {
+            databaseReference.child("luz").removeEventListener(luzListener);
+        }
+
+        luzListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Luz ultimosDatos = null;
+
+                    if (snapshot.hasChild("actual")) {
+                        ultimosDatos = snapshot.child("actual").getValue(Luz.class);
+                    } else {
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            ultimosDatos = child.getValue(Luz.class);
+                        }
+                    }
+
+                    if (ultimosDatos != null) {
+                        datosLuz = ultimosDatos;
+                        mostrarDatosLuz(ultimosDatos);
+                    }
+                } else {
+                    Log.d(TAG, "No hay datos de luz disponibles");
+                    mostrarDatosVaciosLuz();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error al cargar datos de luz: " + error.getMessage());
+                Toast.makeText(requireContext(),
+                        "Error al cargar datos de luz", Toast.LENGTH_SHORT).show();
+                mostrarDatosVaciosLuz();
+            }
+        };
+        databaseReference.child("luz").addValueEventListener(luzListener);
+    }
+
+    private void mostrarDatosLuz(Luz datos){
+        if (datos != null && datos.getEstado() != null) {
+            TextView tvEmoji = getView().findViewById(R.id.tvEmojiLuz);
+            if (tvEmoji != null) {
+                tvEmoji.setText(datos.getEmojiEstado());
+            }
+
+            tvLuz.setText(datos.getEstadoFormateado());
+            tvIluminancia.setText(String.valueOf(datos.getIluminancia()));
+        } else {
+            mostrarDatosVaciosLuz();
+        }
+    }
+
+    public void mostrarDatosVaciosLuz(){
+        tvLuz.setText("Sin datos");
+        tvIluminancia.setText("Sin datos");
+        TextView tvEmoji = getView().findViewById(R.id.tvEmojiLuz);
+        if (tvEmoji != null) {
+            tvEmoji.setText("❓");
+        }
     }
 
     private void cargarDatosLluvia() {
