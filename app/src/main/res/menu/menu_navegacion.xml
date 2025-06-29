@@ -3,14 +3,19 @@
 
     <item
         android:id="@+id/nav_cambios"
-        android:icon="@android:drawable/ic_popup_sync"
+        android:icon="@drawable/clima"
         android:title="Clima"
          />
 
     <item
         android:id="@+id/nav_graficas"
-        android:icon="@android:drawable/ic_menu_manage"
+        android:icon="@drawable/graficasclima"
         android:title="Graficas"
          />
+    <item
+        android:id="@+id/nav_perfil"
+        android:icon="@drawable/perfil"
+        android:title="Perfil"
+        />
 
 </menu>
