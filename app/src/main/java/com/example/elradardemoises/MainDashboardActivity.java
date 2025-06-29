@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.elradardemoises.fragments.FragmentGraficas;
+import com.example.elradardemoises.fragments.Fragment_perfil;
 import com.example.elradardemoises.fragments.Fragment_principal;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -44,6 +45,9 @@ public class MainDashboardActivity extends AppCompatActivity {
                     break;
                 case R.id.nav_graficas:
                     fragment = new FragmentGraficas();
+                    break;
+                case R.id.nav_perfil:
+                    fragment = new Fragment_perfil();
                     break;
             }
             if (fragment != null) {
