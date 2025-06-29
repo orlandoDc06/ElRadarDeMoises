@@ -449,6 +449,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         vientoListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!isAdded() || getView() == null || isDetached()) {
+                    return;
+                }
                 if (snapshot.exists()){
                     Viento ultimosDatos = null;
 
@@ -481,6 +484,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     private void mostrarDatosViento(Viento datos) {
+        if (!isAdded() || getView() == null || isDetached()) {
+            return;
+        }
         if (datos != null && String.valueOf(datos.getVelocidad()) != null) {
 
             tvViento.setText(datos.getVelocidad() + " Km/h");
@@ -490,6 +496,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     private void mostrarDatosVaciosViento() {
+        if (!isAdded() || getView() == null || isDetached()) {
+            return;
+        }
         tvViento.setText("Sin datos");
 
     }
@@ -502,6 +511,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         sueloListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!isAdded() || getView() == null || isDetached()) {
+                    return;
+                }
                 if (snapshot.exists()) {
                     Suelo ultimosDatos = null;
 
@@ -533,6 +545,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     public void mostrarDatosSuelo(Suelo datos){
+        if (!isAdded() || getView() == null || isDetached()) {
+            return;
+        }
         if (datos != null && datos.getEstado() != null) {
             TextView tvEmoji = getView().findViewById(R.id.tvEmojiSuelo);
             if (tvEmoji != null) {
@@ -547,6 +562,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     public void mostrarDatosVaciosSuelo(){
+        if (!isAdded() || getView() == null || isDetached()) {
+            return;
+        }
         tvSuelo.setText("Sin datos");
         TextView tvEmoji = getView().findViewById(R.id.tvEmojiSuelo);
         if (tvEmoji != null) {
@@ -563,6 +581,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         gasesListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!isAdded() || getView() == null || isDetached()) {
+                    return;
+                }
                 if (snapshot.exists()) {
                     Mq2 ultimosDatos = null;
 
@@ -594,6 +615,10 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     public void mostrarDatosGases(Mq2 datos){
+        if (!isAdded() || getView() == null || isDetached()) {
+            return;
+        }
+
         if (datos != null && datos.getEstado() != null) {
             TextView tvEmoji = getView().findViewById(R.id.tvEmojiGases);
             if (tvEmoji != null) {
@@ -608,6 +633,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     public void mostrarDatosVaciosGases(){
+        if (!isAdded() || getView() == null || isDetached()) {
+            return;
+        }
         tvGases.setText("Sin datos");
         TextView tvEmoji = getView().findViewById(R.id.tvEmojiGases);
         if (tvEmoji != null) {
@@ -624,6 +652,10 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         luzListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!isAdded() || getView() == null || isDetached()) {
+                    return;
+                }
+
                 if (snapshot.exists()) {
                     Luz ultimosDatos = null;
 
@@ -657,6 +689,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     private void mostrarDatosLuz(Luz datos){
+        if (!isAdded() || getView() == null || isDetached()) {
+            return;
+        }
         if (datos != null && datos.getEstado() != null) {
             TextView tvEmoji = getView().findViewById(R.id.tvEmojiLuz);
             if (tvEmoji != null) {
@@ -671,6 +706,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     public void mostrarDatosVaciosLuz(){
+        if (!isAdded() || getView() == null || isDetached()) {
+            return;
+        }
         tvLuz.setText("Sin datos");
         tvIluminancia.setText("Sin datos");
         TextView tvEmoji = getView().findViewById(R.id.tvEmojiLuz);
@@ -749,6 +787,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         weatherListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!isAdded() || getView() == null || isDetached()) {
+                    return;
+                }
                 if (snapshot.exists()) {
                     Dht11 ultimosDatos = null;
 
@@ -790,6 +831,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         bmpListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!isAdded() || getView() == null || isDetached()) {
+                    return;
+                }
                 if (snapshot.exists()) {
                     Bmp180 ultimosDatos = null;
 
@@ -824,6 +868,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     private void mostrarDatosMeteorologicos(Dht11 datos) {
+        if (!isAdded() || getView() == null || isDetached()) {
+            return;
+        }
         if (datos != null) {
             double temperatura = datos.getTemperatura();
             if (temperatura != 0) {
@@ -850,6 +897,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     private void mostrarDatosBarometricos(Bmp180 datos) {
+        if (!isAdded() || getView() == null || isDetached()) {
+            return;
+        }
         if (datos != null) {
             double altitud = datos.getAltitud();
             if (altitud != 0) {
@@ -883,12 +933,18 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     private void mostrarDatosVaciosDht11() {
+        if (!isAdded() || getView() == null || isDetached()) {
+            return;
+        }
         tvTemperatura.setText("-- °C");
         tvHumedad.setText("-- %");
         tvTimestamp.setText("Sin datos disponibles");
     }
 
     private void mostrarDatosVaciosBmp180() {
+        if (!isAdded() || getView() == null || isDetached()) {
+            return;
+        }
         tvAltitud.setText("-- m");
         tvPresion.setText("-- hPa");
         tvPresionNivelMar.setText("-- hPa");

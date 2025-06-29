@@ -94,8 +94,6 @@ public class LLuvia {
                 return "🌦️";
             case "tormenta":
                 return "⛈️";
-            case "nublado":
-                return "☁️";
             default:
                 return "💧";
         }
