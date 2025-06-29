@@ -95,7 +95,7 @@ public class Luz {
             case "Muy soleado":
                 return "☀️";
             default:
-                return "💧";
+                return "☀️";
         }
     }
 }
