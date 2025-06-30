@@ -41,7 +41,6 @@ import java.util.Map;
 public class Fragment_perfil extends Fragment {
     private static final String TAG = "Fragment_perfil";
 
-    // Views
     private ImageView ivEditMode;
     private ImageView ivFotoPerfil;
     private TextView tvCambiarFoto;
@@ -50,13 +49,10 @@ public class Fragment_perfil extends Fragment {
     private LinearLayout llBotonesAccion;
     private MaterialButton btnCancelar, btnGuardar;
     private TextView tvFechaRegistro;
-
-    // Firebase
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
     private FirebaseUser currentUser;
 
-    // Estado
     private boolean modoEdicion = false;
     private Usuario usuarioActual;
     private String nombreOriginal;
@@ -65,7 +61,6 @@ public class Fragment_perfil extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inicializar Firebase
         firebaseAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         currentUser = firebaseAuth.getCurrentUser();
@@ -86,14 +81,9 @@ public class Fragment_perfil extends Fragment {
     }
 
     private void inicializarVistas(View view) {
-        // Header
         ivEditMode = view.findViewById(R.id.iv_edit_mode);
 
-        // Foto de perfil
         ivFotoPerfil = view.findViewById(R.id.iv_foto_perfil);
-        tvCambiarFoto = view.findViewById(R.id.tv_cambiar_foto);
-
-        // Campos de texto
         tilNombre = view.findViewById(R.id.til_nombre);
         tilPassword = view.findViewById(R.id.til_password);
         tilConfirmPassword = view.findViewById(R.id.til_confirm_password);
@@ -104,24 +94,22 @@ public class Fragment_perfil extends Fragment {
         etConfirmPassword = view.findViewById(R.id.et_confirm_password);
         etEmail = view.findViewById(R.id.et_email);
 
-        // Botones
         llBotonesAccion = view.findViewById(R.id.ll_botones_accion);
         btnCancelar = view.findViewById(R.id.btn_cancelar);
         btnGuardar = view.findViewById(R.id.btn_guardar);
 
-        // Información adicional
         tvFechaRegistro = view.findViewById(R.id.tv_fecha_registro);
+
+        btnGuardar.setVisibility(View.GONE);
+        btnCancelar.setVisibility(View.GONE);
     }
 
     private void configurarEventos() {
-        // Botón de editar
         ivEditMode.setOnClickListener(v -> toggleModoEdicion());
 
-        // Botones de acción
         btnCancelar.setOnClickListener(v -> cancelarEdicion());
         btnGuardar.setOnClickListener(v -> guardarCambios());
 
-        // Ocultar cambiar foto inicialmente
         if (tvCambiarFoto != null) {
             tvCambiarFoto.setVisibility(View.GONE);
         }
@@ -133,10 +121,8 @@ public class Fragment_perfil extends Fragment {
             return;
         }
 
-        // Mostrar datos básicos inmediatamente
         mostrarDatosBasicos();
 
-        // Cargar datos completos desde Firebase
         String userId = currentUser.getUid();
         databaseReference.child("usuarios").child(userId).addValueEventListener(new ValueEventListener() {
             @Override
@@ -147,7 +133,6 @@ public class Fragment_perfil extends Fragment {
                         actualizarInterfaz();
                     }
                 } else {
-                    // Si no existe el usuario en la BD, crear uno básico
                     crearUsuarioBasico();
                 }
             }
@@ -161,10 +146,8 @@ public class Fragment_perfil extends Fragment {
     }
 
     private void mostrarDatosBasicos() {
-        // Mostrar email (siempre desde FirebaseUser)
         etEmail.setText(currentUser.getEmail());
 
-        // Mostrar nombre (desde FirebaseUser o extraído del email)
         String nombre = currentUser.getDisplayName();
         if (TextUtils.isEmpty(nombre)) {
             nombre = Usuario.extraerNombreDeCorreo(currentUser.getEmail());
@@ -172,35 +155,31 @@ public class Fragment_perfil extends Fragment {
         etNombre.setText(nombre);
         nombreOriginal = nombre;
 
-        // Cargar foto de perfil
         cargarFotoPerfil();
 
-        // Mostrar fecha de registro
         mostrarFechaRegistro();
     }
 
     private void actualizarInterfaz() {
         if (usuarioActual != null) {
-            // Actualizar nombre si está disponible en la BD
             if (!TextUtils.isEmpty(usuarioActual.getNombre())) {
-                etNombre.setText(usuarioActual.getNombre());
-                nombreOriginal = usuarioActual.getNombre();
+                if (etNombre != null) {
+                    etNombre.setText(usuarioActual.getNombre());
+                    nombreOriginal = usuarioActual.getNombre();
+                }
             }
 
-            // Actualizar foto si está disponible
             if (!TextUtils.isEmpty(usuarioActual.getPp())) {
                 cargarFotoPerfilDesdeUrl(usuarioActual.getPp());
             }
         }
     }
-
     private void crearUsuarioBasico() {
         usuarioActual = new Usuario();
         usuarioActual.setCorreo(currentUser.getEmail());
         usuarioActual.setNombre(nombreOriginal);
         usuarioActual.setKey(currentUser.getUid());
 
-        // Obtener URL de foto si está disponible
         if (currentUser.getPhotoUrl() != null) {
             usuarioActual.setPp(currentUser.getPhotoUrl().toString());
         } else {
@@ -212,7 +191,6 @@ public class Fragment_perfil extends Fragment {
         if (currentUser.getPhotoUrl() != null) {
             cargarFotoPerfilDesdeUrl(currentUser.getPhotoUrl().toString());
         } else {
-            // Mostrar imagen por defecto - usando el ícono del layout
             ivFotoPerfil.setImageResource(android.R.drawable.ic_menu_gallery);
         }
     }
@@ -244,25 +222,21 @@ public class Fragment_perfil extends Fragment {
     }
 
     private void configurarModoEdicion(boolean edicion) {
-        // Habilitar/deshabilitar campos editables
         etNombre.setEnabled(edicion);
         etPassword.setEnabled(edicion);
         etConfirmPassword.setEnabled(edicion);
 
-        // Mostrar/ocultar botones de acción
         llBotonesAccion.setVisibility(edicion ? View.VISIBLE : View.GONE);
-
-        // Cambiar icono del botón de editar
+        btnGuardar.setVisibility(View.VISIBLE);
+        btnCancelar.setVisibility(View.VISIBLE);
         ivEditMode.setImageResource(edicion ?
                 android.R.drawable.ic_menu_close_clear_cancel :
                 android.R.drawable.ic_menu_edit);
 
         if (!edicion) {
-            // Limpiar campos de contraseña
             etPassword.setText("");
             etConfirmPassword.setText("");
 
-            // Restaurar nombre original
             etNombre.setText(nombreOriginal);
         }
     }
@@ -280,18 +254,14 @@ public class Fragment_perfil extends Fragment {
         String nuevoNombre = etNombre.getText().toString().trim();
         String nuevaPassword = etPassword.getText().toString().trim();
 
-        // Deshabilitar botones mientras se guarda
         btnGuardar.setEnabled(false);
         btnCancelar.setEnabled(false);
 
-        // Guardar cambios
         if (!TextUtils.isEmpty(nuevaPassword)) {
-            // Si hay nueva contraseña, actualizarla primero
             actualizarPassword(nuevaPassword, () -> {
                 actualizarNombre(nuevoNombre);
             });
         } else {
-            // Solo actualizar nombre
             actualizarNombre(nuevoNombre);
         }
     }
@@ -301,7 +271,6 @@ public class Fragment_perfil extends Fragment {
         String password = etPassword.getText().toString().trim();
         String confirmPassword = etConfirmPassword.getText().toString().trim();
 
-        // Validar nombre
         if (TextUtils.isEmpty(nombre)) {
             tilNombre.setError("El nombre es requerido");
             return false;
@@ -309,7 +278,6 @@ public class Fragment_perfil extends Fragment {
             tilNombre.setError(null);
         }
 
-        // Validar contraseñas si se están cambiando
         if (!TextUtils.isEmpty(password) || !TextUtils.isEmpty(confirmPassword)) {
             if (password.length() < 6) {
                 tilPassword.setError("La contraseña debe tener al menos 6 caracteres");
@@ -350,7 +318,6 @@ public class Fragment_perfil extends Fragment {
     }
 
     private void actualizarNombre(String nuevoNombre) {
-        // Actualizar en Firebase Auth
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(nuevoNombre)
                 .build();
@@ -359,7 +326,6 @@ public class Fragment_perfil extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "Perfil de Firebase Auth actualizado");
-                        // Actualizar en Realtime Database
                         actualizarEnBaseDatos(nuevoNombre);
                     } else {
                         Log.e(TAG, "Error al actualizar perfil de Auth", task.getException());
@@ -382,13 +348,11 @@ public class Fragment_perfil extends Fragment {
                         Log.d(TAG, "Datos actualizados en la base de datos");
                         Toast.makeText(getContext(), "Perfil actualizado exitosamente", Toast.LENGTH_SHORT).show();
 
-                        // Actualizar estado local
                         nombreOriginal = nuevoNombre;
                         if (usuarioActual != null) {
                             usuarioActual.setNombre(nuevoNombre);
                         }
 
-                        // Salir del modo edición
                         configurarModoEdicion(false);
                         modoEdicion = false;
 
@@ -409,7 +373,6 @@ public class Fragment_perfil extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Limpiar referencias para evitar memory leaks
         ivEditMode = null;
         ivFotoPerfil = null;
         tvCambiarFoto = null;

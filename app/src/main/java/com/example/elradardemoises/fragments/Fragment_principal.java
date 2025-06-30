@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,7 @@ import com.example.elradardemoises.models.Suelo;
 import com.example.elradardemoises.models.Usuario;
 import com.example.elradardemoises.models.Viento;
 import com.example.elradardemoises.utils.UserManager;
+import com.example.elradardemoises.utils.WeatherBackgroundHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -130,6 +132,10 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     private Ubicacion ubicacion;
     private static final int PERMISSION_REQUEST_CODE = 1001;
 
+    private boolean permisosVerificados = false;
+    private FrameLayout weatherContainer;
+    private WeatherBackgroundHelper weatherHelper;
+
     public Fragment_principal() {
 
     }
@@ -144,6 +150,7 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        solicitarPermisos();
     }
 
     @Override
@@ -164,7 +171,6 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         cargarDatosSuelo();
         cargarDatosLuz();
         initializeLocation();
-        solicitarPermisos();
 
         gestorFiltroFecha.inicializarVistas(view);
         gestorFiltroFecha.configurarClickListeners();
@@ -172,6 +178,10 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     private void initializeViews(View view) {
+
+        weatherContainer = view.findViewById(R.id.weatherContainer);
+        weatherHelper = new WeatherBackgroundHelper(requireContext(), weatherContainer);
+
         tvUserName = view.findViewById(R.id.tvUserName);
         tvUserEmail = view.findViewById(R.id.tvUserEmail);
         ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
@@ -398,34 +408,32 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
 
-    private void abrirPdf(String rutaArchivo) {
-        try {
-            File archivo = new File(rutaArchivo);
-            if (archivo.exists()) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                Uri uri = FileProvider.getUriForFile(getContext(),
-                        getContext().getPackageName() + ".fileprovider", archivo);
-                intent.setDataAndType(uri, "application/pdf");
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(intent);
-            }
-        } catch (Exception e) {
-            Toast.makeText(getContext(), "No se puede abrir el PDF", Toast.LENGTH_SHORT).show();
-        }
-    }
     private void solicitarPermisos() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getContext(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (permisosVerificados) {
+            return;
+        }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Verificar si ya tienes los permisos
+            boolean tienePermisoWrite = ContextCompat.checkSelfPermission(requireContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+
+            boolean tienePermisoRead = ContextCompat.checkSelfPermission(requireContext(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+
+            if (tienePermisoWrite && tienePermisoRead) {
+                permisosVerificados = true;
+                Log.d("Permisos", "Permisos ya concedidos");
+            } else {
                 requestPermissions(new String[]{
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.READ_EXTERNAL_STORAGE
                 }, PERMISSION_REQUEST_CODE);
             }
+        } else {
+            permisosVerificados = true;
         }
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -433,13 +441,15 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
 
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                permisosVerificados = true;
                 Toast.makeText(getContext(), "Permisos concedidos", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getContext(), "Permisos necesarios para generar PDF",
-                        Toast.LENGTH_LONG).show();
+              //  Toast.makeText(getContext(), "Permisos necesarios para generar PDF",
+                //     Toast.LENGTH_LONG).show();
             }
         }
     }
+
 
     private void cargarDatosViento(){
         if (vientoListener != null){
@@ -766,10 +776,13 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
             }
 
             tvLluvia.setText(datos.getEstadoFormateado());
+            weatherHelper.applyWeatherBackground(datos);
+
         } else {
             mostrarDatosVaciosLluvia();
         }
     }
+
 
     private void mostrarDatosVaciosLluvia() {
         tvLluvia.setText("Sin datos");
@@ -1114,11 +1127,23 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         } else {
             cargarFotoDirectaDesdeFirebase();
         }
+        if (weatherHelper != null) {
+            weatherHelper.resumeAnimations();
+        }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (weatherHelper != null) {
+            weatherHelper.pauseAnimations();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        permisosVerificados = false;
+
         if (weatherListener != null && databaseReference != null) {
             databaseReference.child("dht11").removeEventListener(weatherListener);
         }
@@ -1130,6 +1155,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         }
         if (gestorFiltroFecha != null) {
             gestorFiltroFecha.limpiarListeners();
+        }
+        if (weatherHelper != null) {
+            weatherHelper.clearAnimations();
         }
     }
 }
