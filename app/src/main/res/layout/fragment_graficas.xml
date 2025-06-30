@@ -1,14 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/gradient_background"
     tools:context=".fragments.FragmentGraficas">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-</FrameLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DATOS BAROMÉTRICOS"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="25sp"
+            android:layout_marginTop="30dp"
+            android:padding="20dp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="15dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
+
+            <Button
+                android:id="@+id/btnAltitud"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Altitud"
+                android:layout_marginEnd="4dp"
+                android:backgroundTint="@color/colorAccent" />
+
+            <Button
+                android:id="@+id/btnPresion"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Presión"
+                android:layout_marginHorizontal="4dp"
+                android:backgroundTint="@color/colorPrimary" />
+
+            <Button
+                android:id="@+id/btnPresionMar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="P. Mar"
+                android:layout_marginStart="4dp"
+                android:backgroundTint="@color/colorSurface" />
+        </LinearLayout>
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+            android:padding="20dp">
+
+           <com.github.mikephil.charting.charts.LineChart
+               android:id="@+id/lineChart"
+               android:layout_width="match_parent"
+               android:layout_height="300dp"
+               android:padding="20dp" />
+
+       </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorDivider"
+            android:layout_margin="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DATOS CLIMATICOS"
+            android:textSize="18sp"
+            android:textColor="@color/colorTextPrimary"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_margin="16dp" />
+
+        <com.github.mikephil.charting.charts.CombinedChart
+            android:id="@+id/combinedChartDht11"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_margin="16dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorDivider"
+            android:layout_margin="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Luz"
+            android:textSize="18sp"
+            android:textColor="@color/colorTextPrimary"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_margin="16dp" />
+
+        <com.github.mikephil.charting.charts.CombinedChart
+            android:id="@+id/combinedChartLuz"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_margin="16dp" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorDivider"
+            android:layout_margin="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="GASES"
+            android:textSize="18sp"
+            android:textColor="@color/colorTextPrimary"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_margin="16dp" />
+
+        <com.github.mikephil.charting.charts.CombinedChart
+            android:id="@+id/combinedChartMq2"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_margin="16dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorDivider"
+            android:layout_margin="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SUELO"
+            android:textSize="18sp"
+            android:textColor="@color/colorTextPrimary"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_margin="16dp" />
+
+        <com.github.mikephil.charting.charts.CombinedChart
+            android:id="@+id/combinedChartSuelo"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_margin="16dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorDivider"
+            android:layout_margin="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="VIENTO"
+            android:textSize="18sp"
+            android:textColor="@color/colorTextPrimary"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_margin="16dp" />
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lineChartViento"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_margin="16dp"
+            android:padding="20dp"/>
+
+    </LinearLayout>
+</ScrollView>

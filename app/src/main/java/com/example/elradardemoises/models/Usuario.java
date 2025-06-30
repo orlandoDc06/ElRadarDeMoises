@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class Usuario implements Serializable {
     private String correo;
     private String nombre;
-    private String pp;
+    private String pp; //Profile Photo(Foto de perfil)
     private String key;
 
     public Usuario() {
