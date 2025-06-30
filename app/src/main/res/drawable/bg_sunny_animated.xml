@@ -4,5 +4,4 @@
     <item android:drawable="@drawable/bg_sunny_frame1" android:duration="1000" />
     <item android:drawable="@drawable/bg_sunny_frame2" android:duration="1000" />
     <item android:drawable="@drawable/bg_sunny_frame3" android:duration="1000" />
-    <item android:drawable="@drawable/bg_sunny_frame2" android:duration="1000" />
 </animation-list>

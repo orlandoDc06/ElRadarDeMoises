@@ -41,7 +41,6 @@ import java.util.Map;
 public class Fragment_perfil extends Fragment {
     private static final String TAG = "Fragment_perfil";
 
-    // Views
     private ImageView ivEditMode;
     private ImageView ivFotoPerfil;
     private TextView tvCambiarFoto;
@@ -50,13 +49,10 @@ public class Fragment_perfil extends Fragment {
     private LinearLayout llBotonesAccion;
     private MaterialButton btnCancelar, btnGuardar;
     private TextView tvFechaRegistro;
-
-    // Firebase
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
     private FirebaseUser currentUser;
 
-    // Estado
     private boolean modoEdicion = false;
     private Usuario usuarioActual;
     private String nombreOriginal;
@@ -65,7 +61,6 @@ public class Fragment_perfil extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inicializar Firebase
         firebaseAuth = FirebaseAuth.getInstance();
         databaseReference = FirebaseDatabase.getInstance().getReference();
         currentUser = firebaseAuth.getCurrentUser();
@@ -86,14 +81,9 @@ public class Fragment_perfil extends Fragment {
     }
 
     private void inicializarVistas(View view) {
-        // Header
         ivEditMode = view.findViewById(R.id.iv_edit_mode);
 
-        // Foto de perfil
         ivFotoPerfil = view.findViewById(R.id.iv_foto_perfil);
-
-
-        // Campos de texto
         tilNombre = view.findViewById(R.id.til_nombre);
         tilPassword = view.findViewById(R.id.til_password);
         tilConfirmPassword = view.findViewById(R.id.til_confirm_password);
@@ -104,24 +94,22 @@ public class Fragment_perfil extends Fragment {
         etConfirmPassword = view.findViewById(R.id.et_confirm_password);
         etEmail = view.findViewById(R.id.et_email);
 
-        // Botones
         llBotonesAccion = view.findViewById(R.id.ll_botones_accion);
         btnCancelar = view.findViewById(R.id.btn_cancelar);
         btnGuardar = view.findViewById(R.id.btn_guardar);
 
-        // Información adicional
         tvFechaRegistro = view.findViewById(R.id.tv_fecha_registro);
+
+        btnGuardar.setVisibility(View.GONE);
+        btnCancelar.setVisibility(View.GONE);
     }
 
     private void configurarEventos() {
-        // Botón de editar
         ivEditMode.setOnClickListener(v -> toggleModoEdicion());
 
-        // Botones de acción
         btnCancelar.setOnClickListener(v -> cancelarEdicion());
         btnGuardar.setOnClickListener(v -> guardarCambios());
 
-        // Ocultar cambiar foto inicialmente
         if (tvCambiarFoto != null) {
             tvCambiarFoto.setVisibility(View.GONE);
         }
@@ -145,7 +133,6 @@ public class Fragment_perfil extends Fragment {
                         actualizarInterfaz();
                     }
                 } else {
-                    // Si no existe el usuario en la BD, crear uno básico
                     crearUsuarioBasico();
                 }
             }
@@ -240,7 +227,8 @@ public class Fragment_perfil extends Fragment {
         etConfirmPassword.setEnabled(edicion);
 
         llBotonesAccion.setVisibility(edicion ? View.VISIBLE : View.GONE);
-
+        btnGuardar.setVisibility(View.VISIBLE);
+        btnCancelar.setVisibility(View.VISIBLE);
         ivEditMode.setImageResource(edicion ?
                 android.R.drawable.ic_menu_close_clear_cancel :
                 android.R.drawable.ic_menu_edit);

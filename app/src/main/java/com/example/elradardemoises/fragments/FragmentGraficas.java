@@ -131,7 +131,7 @@ public class FragmentGraficas extends Fragment {
         description.setTextSize(14f);
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorTextPrimary));
 
-        description.setPosition(450f, 30f);
+        description.setPosition(650f, 50f);
         lineChart.setDescription(description);
 
         lineChart.setTouchEnabled(true);
@@ -210,7 +210,7 @@ public class FragmentGraficas extends Fragment {
         description.setTextSize(14f);
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorTextPrimary));
 
-        description.setPosition(450f, 30f);
+        description.setPosition(650f, 50f);
         combinedChartDht11.setDescription(description);
         combinedChartDht11.getDescription().setEnabled(true);
         combinedChartDht11.setTouchEnabled(true);
@@ -418,7 +418,7 @@ public class FragmentGraficas extends Fragment {
         dataSet.setValueTextSize(10f);
         dataSet.setValueTextColor(getResources().getColor(R.color.colorTextPrimary));
 
-        // Configurar eje X
+        // eje X
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
@@ -442,7 +442,7 @@ public class FragmentGraficas extends Fragment {
         description.setText("Últimos 7 registros");
         description.setTextSize(14f);
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorTextPrimary));
-        description.setPosition(450f, 30f);
+        description.setPosition(650f, 50f);
         combinedChartLuz.setDescription(description);
 
         combinedChartLuz.setTouchEnabled(true);
@@ -635,7 +635,7 @@ public class FragmentGraficas extends Fragment {
         description.setText("Últimos 7 registros");
         description.setTextSize(14f);
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorTextPrimary));
-        description.setPosition(450f, 30f);
+        description.setPosition(650f, 50f);
         combinedChartMq2.setDescription(description);
 
         combinedChartMq2.setTouchEnabled(true);
@@ -814,7 +814,7 @@ public class FragmentGraficas extends Fragment {
         description.setText("Últimos 7 registros");
         description.setTextSize(14f);
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorTextPrimary));
-        description.setPosition(450f, 30f);
+        description.setPosition(650f, 50f);
         combinedChartSuelo.setDescription(description);
 
         combinedChartSuelo.setTouchEnabled(true);
@@ -995,7 +995,7 @@ public class FragmentGraficas extends Fragment {
         description.setText("Últimos 7 registros");
         description.setTextSize(14f);
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorTextPrimary));
-        description.setPosition(450f, 30f);
+        description.setPosition(650f, 50f);
         lineChartViento.setDescription(description);
 
         lineChartViento.setTouchEnabled(true);
@@ -1072,7 +1072,6 @@ public class FragmentGraficas extends Fragment {
 
         ArrayList<Entry> velocidadEntries = new ArrayList<>();
 
-        // Crear entradas para la gráfica
         for (int i = 0; i < ultimosDatos.size(); i++) {
             Viento viento = ultimosDatos.get(i);
             velocidadEntries.add(new Entry(i + 1, (float) viento.getVelocidad()));

@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,7 @@ import com.example.elradardemoises.models.Suelo;
 import com.example.elradardemoises.models.Usuario;
 import com.example.elradardemoises.models.Viento;
 import com.example.elradardemoises.utils.UserManager;
+import com.example.elradardemoises.utils.WeatherBackgroundHelper;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -131,6 +133,8 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     private static final int PERMISSION_REQUEST_CODE = 1001;
 
     private boolean permisosVerificados = false;
+    private FrameLayout weatherContainer;
+    private WeatherBackgroundHelper weatherHelper;
 
     public Fragment_principal() {
 
@@ -174,6 +178,10 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
     private void initializeViews(View view) {
+
+        weatherContainer = view.findViewById(R.id.weatherContainer);
+        weatherHelper = new WeatherBackgroundHelper(requireContext(), weatherContainer);
+
         tvUserName = view.findViewById(R.id.tvUserName);
         tvUserEmail = view.findViewById(R.id.tvUserEmail);
         ivProfilePicture = view.findViewById(R.id.ivProfilePicture);
@@ -401,7 +409,6 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
 
 
     private void solicitarPermisos() {
-        // Si ya se verificaron los permisos, no hacer nada
         if (permisosVerificados) {
             return;
         }
@@ -438,7 +445,7 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
                 Toast.makeText(getContext(), "Permisos concedidos", Toast.LENGTH_SHORT).show();
             } else {
               //  Toast.makeText(getContext(), "Permisos necesarios para generar PDF",
-                // >z       Toast.LENGTH_LONG).show();
+                //     Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -769,10 +776,13 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
             }
 
             tvLluvia.setText(datos.getEstadoFormateado());
+            weatherHelper.applyWeatherBackground(datos);
+
         } else {
             mostrarDatosVaciosLluvia();
         }
     }
+
 
     private void mostrarDatosVaciosLluvia() {
         tvLluvia.setText("Sin datos");
@@ -1117,6 +1127,16 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         } else {
             cargarFotoDirectaDesdeFirebase();
         }
+        if (weatherHelper != null) {
+            weatherHelper.resumeAnimations();
+        }
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (weatherHelper != null) {
+            weatherHelper.pauseAnimations();
+        }
     }
 
     @Override
@@ -1135,6 +1155,9 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         }
         if (gestorFiltroFecha != null) {
             gestorFiltroFecha.limpiarListeners();
+        }
+        if (weatherHelper != null) {
+            weatherHelper.clearAnimations();
         }
     }
 }

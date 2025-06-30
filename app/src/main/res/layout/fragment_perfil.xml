@@ -40,8 +40,15 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="4dp"
                 android:contentDescription="Editar perfil"
-                android:visibility="visible" />
-
+                android:visibility="visible"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Editar"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                />
         </LinearLayout>
 
         <!-- Card contenedor principal -->
@@ -253,6 +260,7 @@
                 android:backgroundTint="@color/temp_red"
                 android:textSize="16sp"
                 android:textAllCaps="false"
+                android:visibility="gone"
                 app:strokeColor="@color/colorDivider"
                 android:textColor="@color/colorTextSecondary" />
 
@@ -263,6 +271,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:text="Guardar"
+                android:visibility="gone"
                 android:textSize="16sp"
                 android:textAllCaps="false"
                 android:backgroundTint="@color/colorPrimary"
@@ -270,7 +279,6 @@
 
         </LinearLayout>
 
-        <!-- Card de estadísticas o información adicional -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

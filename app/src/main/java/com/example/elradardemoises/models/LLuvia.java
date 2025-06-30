@@ -1,5 +1,7 @@
 package com.example.elradardemoises.models;
 
+import com.example.elradardemoises.R;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -110,7 +112,6 @@ public class LLuvia {
     }
 
 
-    // NUEVOS MÉTODOS PARA BACKGROUNDS ANIMADOS
 
     public int getBackgroundAnimado() {
         if (estado == null || estado.isEmpty()) {
@@ -123,21 +124,50 @@ public class LLuvia {
             case "seco":
                 return R.drawable.bg_sunny_animated;
             case "aguacero":
-                return R.drawable.bg_heavy_rain_animated;
+                return R.drawable.bg_rain_animated;
             case "lluvia":
                 return R.drawable.bg_rain_animated;
             case "llovizna":
-                return R.drawable.bg_drizzle_animated;
+                return R.drawable.bg_rain_animated;
             case "tormenta":
                 return R.drawable.bg_storm_animated;
             default:
-                return R.drawable.bg_cloudy_animated;
+                return R.drawable.bg_sunny_animated;
         }
+    }
+
+    public String getBackgroundAnimatedName() {
+        if (estado == null || estado.isEmpty()) {
+            return "bg_cloudy_animated";
+        }
+
+        String estadoLower = estado.toLowerCase().trim();
+
+        switch (estadoLower) {
+            case "seco":
+                return "bg_sunny_animated";
+            case "aguacero":
+                return "bg_heavy_rain_animated";
+            case "lluvia":
+                return "bg_rain_animated";
+            case "llovizna":
+                return "bg_drizzle_animated";
+            case "tormenta":
+                return "bg_storm_animated";
+            default:
+                return "bg_cloudy_animated";
+        }
+    }
+
+    public int getBackgroundAnimado(android.content.Context context) {
+        String drawableName = getBackgroundAnimatedName();
+        int resourceId = context.getResources().getIdentifier(drawableName, "drawable", context.getPackageName());
+        return resourceId != 0 ? resourceId : android.R.drawable.screen_background_dark;
     }
 
     public int[] getBackgroundGradientColors() {
         if (estado == null || estado.isEmpty()) {
-            return new int[]{0xFF6B7280, 0xFF374151}; // Gris por defecto
+            return new int[]{0xFF6B7280, 0xFF374151};
         }
 
         String estadoLower = estado.toLowerCase().trim();
@@ -160,7 +190,7 @@ public class LLuvia {
 
     public long getAnimationDuration() {
         if (estado == null || estado.isEmpty()) {
-            return 3000; // 3 segundos por defecto
+            return 3000;
         }
 
         String estadoLower = estado.toLowerCase().trim();
@@ -197,17 +227,20 @@ public class LLuvia {
             case "lluvia":
                 return "rain_drops";
             case "llovizna":
-                return "light_rain_drops";
+                return "clouds";
             case "tormenta":
                 return "lightning_rain";
             default:
-                return "clouds";
+                return "sun_rays";
         }
     }
 
+
     public boolean shouldShowParticles() {
-        return !estado.toLowerCase().equals("seco") || estado.isEmpty();
+        //return !estado.toLowerCase().equals("seco") || estado.isEmpty();
+        return true;
     }
+
 
     public float getOverlayOpacity() {
         if (estado == null || estado.isEmpty()) {
@@ -231,7 +264,6 @@ public class LLuvia {
                 return 0.3f;
         }
     }
-
 
     @Override
     public boolean equals(Object obj) {
