@@ -130,6 +130,8 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     private Ubicacion ubicacion;
     private static final int PERMISSION_REQUEST_CODE = 1001;
 
+    private boolean permisosVerificados = false;
+
     public Fragment_principal() {
 
     }
@@ -144,6 +146,7 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        solicitarPermisos();
     }
 
     @Override
@@ -164,7 +167,6 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
         cargarDatosSuelo();
         cargarDatosLuz();
         initializeLocation();
-        solicitarPermisos();
 
         gestorFiltroFecha.inicializarVistas(view);
         gestorFiltroFecha.configurarClickListeners();
@@ -398,34 +400,33 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     }
 
 
-    private void abrirPdf(String rutaArchivo) {
-        try {
-            File archivo = new File(rutaArchivo);
-            if (archivo.exists()) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                Uri uri = FileProvider.getUriForFile(getContext(),
-                        getContext().getPackageName() + ".fileprovider", archivo);
-                intent.setDataAndType(uri, "application/pdf");
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(intent);
-            }
-        } catch (Exception e) {
-            Toast.makeText(getContext(), "No se puede abrir el PDF", Toast.LENGTH_SHORT).show();
-        }
-    }
     private void solicitarPermisos() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getContext(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        // Si ya se verificaron los permisos, no hacer nada
+        if (permisosVerificados) {
+            return;
+        }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Verificar si ya tienes los permisos
+            boolean tienePermisoWrite = ContextCompat.checkSelfPermission(requireContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+
+            boolean tienePermisoRead = ContextCompat.checkSelfPermission(requireContext(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+
+            if (tienePermisoWrite && tienePermisoRead) {
+                permisosVerificados = true;
+                Log.d("Permisos", "Permisos ya concedidos");
+            } else {
                 requestPermissions(new String[]{
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.READ_EXTERNAL_STORAGE
                 }, PERMISSION_REQUEST_CODE);
             }
+        } else {
+            permisosVerificados = true;
         }
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -433,13 +434,15 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
 
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                permisosVerificados = true;
                 Toast.makeText(getContext(), "Permisos concedidos", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(getContext(), "Permisos necesarios para generar PDF",
-                        Toast.LENGTH_LONG).show();
+              //  Toast.makeText(getContext(), "Permisos necesarios para generar PDF",
+                // >z       Toast.LENGTH_LONG).show();
             }
         }
     }
+
 
     private void cargarDatosViento(){
         if (vientoListener != null){
@@ -1119,6 +1122,8 @@ public class Fragment_principal extends Fragment implements GestorFiltroFecha.Fi
     @Override
     public void onDestroy() {
         super.onDestroy();
+        permisosVerificados = false;
+
         if (weatherListener != null && databaseReference != null) {
             databaseReference.child("dht11").removeEventListener(weatherListener);
         }

@@ -127,7 +127,7 @@ public class FragmentGraficas extends Fragment {
         lineChart.getDescription().setEnabled(true);
 
         Description description = new Description();
-        description.setText("Datos últimos 7 días");
+        description.setText("Últimos 7 registros");
         description.setTextSize(14f);
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorTextPrimary));
 
@@ -146,7 +146,6 @@ public class FragmentGraficas extends Fragment {
         xAxis.setTextColor(getResources().getColor(R.color.colorTextPrimary));
         xAxis.setTextSize(10f);
         xAxis.setGranularity(1f);
-        xAxis.setLabelRotationAngle(-45f);
         xAxis.setDrawGridLines(false);
 
         YAxis leftAxis = lineChart.getAxisLeft();
@@ -207,7 +206,7 @@ public class FragmentGraficas extends Fragment {
         combinedChartDht11.getDescription().setEnabled(true);
 
         Description description = new Description();
-        description.setText("Datos últimos 7 días");
+        description.setText("Últimos 7 registros");
         description.setTextSize(14f);
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorTextPrimary));
 
@@ -220,7 +219,7 @@ public class FragmentGraficas extends Fragment {
         combinedChartDht11.setPinchZoom(true);
         combinedChartDht11.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.glass_card_background));
 
-
+        combinedChartDht11.setExtraOffsets(16f, 16f, 16f, 40f);
         combinedChartDht11.setDrawOrder(new CombinedChart.DrawOrder[]{
                 CombinedChart.DrawOrder.BAR,
                 CombinedChart.DrawOrder.LINE
@@ -232,11 +231,10 @@ public class FragmentGraficas extends Fragment {
         xAxis.setTextColor(getResources().getColor(R.color.colorTextPrimary));
         xAxis.setTextSize(10f);
         xAxis.setGranularity(1f);
-        xAxis.setLabelRotationAngle(-45f);
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return "Día " + (int) value;
+                return "" + (int) value;
             }
         });
 
@@ -301,7 +299,9 @@ public class FragmentGraficas extends Fragment {
     }
 
     private void actualizarGraficaCombinada(List<Dht11> datos) {
-        // Ordenar datos por timestamp
+        if (!isAdded() || getContext() == null) {
+            return;
+        }
         datos.sort((a, b) -> {
             try {
                 long timeA = Long.parseLong(a.getTimestamp());
@@ -360,7 +360,9 @@ public class FragmentGraficas extends Fragment {
     }
 
     private void actualizarGraficaPorMetrica(List<Bmp180> datos) {
-
+        if (!isAdded() || getContext() == null) {
+            return;
+        }
         datos.sort((a, b) -> {
             try {
                 long timeA = Long.parseLong(a.getTimestamp());
@@ -421,7 +423,7 @@ public class FragmentGraficas extends Fragment {
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return "Día " + (int) value;
+                return "" + (int) value;
             }
         });
         xAxis.setGranularity(1f);
@@ -437,7 +439,7 @@ public class FragmentGraficas extends Fragment {
         combinedChartLuz.getDescription().setEnabled(true);
 
         Description description = new Description();
-        description.setText("Datos últimos 7 días");
+        description.setText("Últimos 7 registros");
         description.setTextSize(14f);
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorTextPrimary));
         description.setPosition(450f, 30f);
@@ -449,7 +451,6 @@ public class FragmentGraficas extends Fragment {
         combinedChartLuz.setPinchZoom(true);
         combinedChartLuz.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.glass_card_background));
         combinedChartLuz.setExtraOffsets(16f, 16f, 16f, 40f);
-
         combinedChartLuz.setDrawOrder(new CombinedChart.DrawOrder[]{
                 CombinedChart.DrawOrder.BAR,
                 CombinedChart.DrawOrder.LINE
@@ -464,7 +465,7 @@ public class FragmentGraficas extends Fragment {
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return "Día " + (int) value;
+                return "" + (int) value;
             }
         });
 
@@ -485,7 +486,6 @@ public class FragmentGraficas extends Fragment {
             }
         });
         xAxis.setDrawGridLines(false);
-
         leftAxis.setDrawGridLines(false);
         YAxis rightAxis = combinedChartLuz.getAxisRight();
         rightAxis.setTextColor(getResources().getColor(R.color.colorTextPrimary));
@@ -516,7 +516,9 @@ public class FragmentGraficas extends Fragment {
     }
 
     private void actualizarGraficaLuz(List<Luz> datos) {
-
+        if (!isAdded() || getContext() == null) {
+            return;
+        }
         datos.sort((a, b) -> {
             try {
                 long timeA = Long.parseLong(a.getTimestamp());
@@ -630,7 +632,7 @@ public class FragmentGraficas extends Fragment {
         combinedChartMq2.getDescription().setEnabled(true);
 
         Description description = new Description();
-        description.setText("Datos últimos 7 días");
+        description.setText("Últimos 7 registros");
         description.setTextSize(14f);
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorTextPrimary));
         description.setPosition(450f, 30f);
@@ -642,7 +644,7 @@ public class FragmentGraficas extends Fragment {
         combinedChartMq2.setPinchZoom(true);
         combinedChartMq2.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.glass_card_background));
         combinedChartMq2.setExtraOffsets(16f, 16f, 16f, 40f);
-
+        combinedChartMq2.setExtraOffsets(16f, 16f, 16f, 40f);
         combinedChartMq2.setDrawOrder(new CombinedChart.DrawOrder[]{
                 CombinedChart.DrawOrder.BAR,
                 CombinedChart.DrawOrder.LINE
@@ -657,7 +659,7 @@ public class FragmentGraficas extends Fragment {
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return "Día " + (int) value;
+                return "" + (int) value;
             }
         });
 
@@ -683,7 +685,6 @@ public class FragmentGraficas extends Fragment {
         rightAxis.setTextColor(getResources().getColor(R.color.colorTextPrimary));
         rightAxis.setAxisMinimum(0f);
         rightAxis.setAxisMaximum(100f);
-
         xAxis.setDrawGridLines(false);
         leftAxis.setDrawGridLines(false);
         rightAxis.setDrawGridLines(false);
@@ -712,6 +713,9 @@ public class FragmentGraficas extends Fragment {
     }
 
     private void actualizarGraficaMq2(List<Mq2> datos) {
+        if (!isAdded() || getContext() == null) {
+            return;
+        }
         datos.sort((a, b) -> {
             try {
                 long timeA = Long.parseLong(a.getTimestamp());
@@ -807,7 +811,7 @@ public class FragmentGraficas extends Fragment {
         combinedChartSuelo.getDescription().setEnabled(true);
 
         Description description = new Description();
-        description.setText("Datos últimos 7 días");
+        description.setText("Últimos 7 registros");
         description.setTextSize(14f);
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorTextPrimary));
         description.setPosition(450f, 30f);
@@ -818,7 +822,7 @@ public class FragmentGraficas extends Fragment {
         combinedChartSuelo.setScaleEnabled(true);
         combinedChartSuelo.setPinchZoom(true);
         combinedChartSuelo.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.glass_card_background));
-        combinedChartSuelo.setExtraOffsets(16f, 16f, 16f, 40f);
+        combinedChartSuelo.setExtraOffsets(10f, 20, 10f, 25f);
 
         combinedChartSuelo.setDrawOrder(new CombinedChart.DrawOrder[]{
                 CombinedChart.DrawOrder.BAR,
@@ -834,7 +838,7 @@ public class FragmentGraficas extends Fragment {
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return "Día " + (int) value;
+                return "" + (int) value;
             }
         });
 
@@ -859,7 +863,6 @@ public class FragmentGraficas extends Fragment {
         rightAxis.setTextColor(getResources().getColor(R.color.colorTextPrimary));
         rightAxis.setAxisMinimum(0f);
         rightAxis.setAxisMaximum(100f);
-
         xAxis.setDrawGridLines(false);
         leftAxis.setDrawGridLines(false);
         rightAxis.setDrawGridLines(false);
@@ -890,7 +893,9 @@ public class FragmentGraficas extends Fragment {
 
     private void actualizarGraficaSuelo(List<Suelo> datos) {
 
-
+        if (!isAdded() || getContext() == null) {
+            return;
+        }
         datos.sort((a, b) -> {
             try {
                 long timeA = Long.parseLong(a.getTimestamp());
@@ -987,7 +992,7 @@ public class FragmentGraficas extends Fragment {
         lineChartViento.getDescription().setEnabled(true);
 
         Description description = new Description();
-        description.setText("Datos últimos 7 días");
+        description.setText("Últimos 7 registros");
         description.setTextSize(14f);
         description.setTextColor(ContextCompat.getColor(getContext(), R.color.colorTextPrimary));
         description.setPosition(450f, 30f);
@@ -998,7 +1003,7 @@ public class FragmentGraficas extends Fragment {
         lineChartViento.setScaleEnabled(true);
         lineChartViento.setPinchZoom(true);
         lineChartViento.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.glass_card_background));
-        lineChartViento.setExtraOffsets(16f, 16f, 16f, 40f);
+        lineChartViento.setExtraOffsets(0f, 30f, 0f, 40f);
 
         // eje X
         XAxis xAxis = lineChartViento.getXAxis();
@@ -1006,12 +1011,11 @@ public class FragmentGraficas extends Fragment {
         xAxis.setTextColor(getResources().getColor(R.color.colorTextPrimary));
         xAxis.setTextSize(10f);
         xAxis.setGranularity(1f);
-        xAxis.setLabelRotationAngle(-45f);
         xAxis.setDrawGridLines(false);
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return "Día " + (int) value;
+                return "" + (int) value;
             }
         });
 
@@ -1048,6 +1052,9 @@ public class FragmentGraficas extends Fragment {
     }
 
     private void actualizarGraficaViento(List<Viento> datos) {
+        if (!isAdded() || getContext() == null) {
+            return;
+        }
         datos.sort((a, b) -> {
             try {
                 long timeA = Long.parseLong(a.getTimestamp());
